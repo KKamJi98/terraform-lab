@@ -56,4 +56,7 @@ terraform.rc
 .history
 .ionide
 
+# keyfile
+*key*
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,terraform
