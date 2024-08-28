@@ -1,3 +1,7 @@
+###############################################################
+# Instance
+###############################################################
+
 resource "aws_instance" "this" {
   ami           = var.ami
   instance_type = var.instance_type
@@ -5,11 +9,14 @@ resource "aws_instance" "this" {
   host_id       = var.host_id
 
   key_name               = var.key_name
-  user_data              = var.user_data
   iam_instance_profile   = var.iam_instance_profile
   vpc_security_group_ids = var.vpc_security_group_ids
 
-  tags = {
-    Name = var.instance_name
-  }
+  user_data              = var.user_data
+  tags = merge(
+    {
+      Name = var.instance_name
+    },
+    var.tags
+  )
 }

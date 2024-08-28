@@ -1,74 +1,34 @@
-provider "aws" {
-  region = "ap-northeast-2"
-}
+module "vpc" {
+  source               = "../modules/vpc"
 
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.64.0"
-    }
-  }
+  name                 = "kkamji-dev-vpc"
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
-  backend "s3" {
-    bucket = "kkamji-terraform-state"
-    key    = "global/s3/terraform.tfstate"
-    region = "ap-northeast-2"
-
-    dynamodb_table = "kkamji-terraform-state-locks"
-    encrypt        = true
+  availability_zones = ["ap-northeast-2a", "ap-northeast-2c", "ap-northeast-2d"]
+  public_subnet_cidr_blocks = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  private_subnet_cidr_blocks = [ "10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24" ]
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
   }
 }
 
-# module "ec2" {
-#   source        = "../modules/ec2"
-#   ami           = "ami-05d2438ca66594916"
-#   instance_type = "t2.micro"
+module "ec2" {
+  source = "../modules/ec2"
+  ami           = "ami-05d2438ca66594916"
+  instance_type = "t2.micro"
+  key_name = "kkam_key_pair"
 
-#   user_data = <<-EOF
-#             #!/bin/bash
-#             echo "Hello, World" > index.html
-#             nohup busybox httpd -f -p ${var.server_port} &
-#             EOF
-# }
-
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "kkamji-terraform-state"
-
-  lifecycle {
-    # 삭제 방지
-    prevent_destroy = true
-  }
+  user_data = templatefile("${path.root}/template/user_data.sh", {
+    server_port = "8080"
+  })
+  
+  instance_name = "kkamji_instance"
 }
 
-resource "aws_s3_bucket_versioning" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.id
 
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.bucket
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_dynamodb_table" "terraform_locks" {
-  name         = "kkamji-terraform-state-locks"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-}
 
 # resource "aws_instance" "app" {
 #   instance_type          = "t2.micro"
