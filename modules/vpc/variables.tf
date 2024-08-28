@@ -32,21 +32,31 @@ variable "tags" {
   default     = {}
 }
 
-###############################################################
-# Subnets
-###############################################################
-
 variable "availability_zones" {
   description = "List of availability zones to deploy subnets in"
   type        = list(string)
   default     = ["ap-northeast-2a", "ap-northeast-2c", "ap-northeast-2d"]
 }
 
+###############################################################
+# Public Subnets
+###############################################################
+
 variable "public_subnet_cidr_blocks" {
   description = "List of CIDR blocks for the subnets"
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
+
+variable "map_public_ip_on_launch" {
+  description = "Map public IP on launch"
+  type = bool
+  default = false
+}
+
+###############################################################
+# Public Subnets
+###############################################################
 
 variable "private_subnet_cidr_blocks" {
   description = "List of CIDR blocks for the subnets"
