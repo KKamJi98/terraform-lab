@@ -1,12 +1,15 @@
-resource "aws_instance" "app" {
-  instance_type = "t2.micro"
-  # availability_zone = "ap-northeast-2a"
-  ami = "ami-008d41dbe16db6778"
+resource "aws_instance" "this" {
+  ami           = var.ami
+  instance_type = var.instance_type
+  subnet_id     = var.subnet_id
+  host_id       = var.host_id
 
-  user_data = <<-EOF
-              #!/bin/bash
-              yum install -y httpd
-              git clone https://github.com/brikis98/php-app.git /var/www/html/app
-              service httpd start
-              EOF
+  key_name               = var.key_name
+  user_data              = var.user_data
+  iam_instance_profile   = var.iam_instance_profile
+  vpc_security_group_ids = var.vpc_security_group_ids
+
+  tags = {
+    Name = var.instance_name
+  }
 }

@@ -1,11 +1,21 @@
-output "public_ip" {
-  value       = aws_instance.app.public_ip
-  description = "The public IP address of the web server"
-}
+# output "public_ip" {
+#   value       = module.ec2.public_ip
+#   description = "The public IP address of the web server"
+# }
 # terraform output
 # terraform output public_ip
 
-output "alb_dns_name" {
-  value = aws_lb.this.dns_name
-  description = "The domain name of the load balancer"
+# output "alb_dns_name" {
+#   value = aws_lb.this.dns_name
+#   description = "The domain name of the load balancer"
+# }
+
+output "s3_bucket_arn" {
+  value       = aws_s3_bucket.terraform_state.arn
+  description = "The ARN of the S3 bucket"
+}
+
+output "dynamodb_table_name" {
+  value       = aws_dynamodb_table.terraform_locks.name
+  description = "The name of the DynamoDB table"
 }
