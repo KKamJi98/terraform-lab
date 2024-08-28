@@ -21,7 +21,7 @@ terraform {
 }
 
 # module "ec2" {
-#   source        = "./modules/ec2"
+#   source        = "../modules/ec2"
 #   ami           = "ami-05d2438ca66594916"
 #   instance_type = "t2.micro"
 
