@@ -4,12 +4,12 @@
 
 output "vpc_id" {
   description = "The ID of the VPC"
-  value = aws_vpc.this.id
+  value       = aws_vpc.this.id
 }
 
 output "vpc_arn" {
   description = "The ARN of the VPC"
-  value = aws_vpc.this.arn
+  value       = aws_vpc.this.arn
 }
 
 ###############################################################
@@ -18,7 +18,7 @@ output "vpc_arn" {
 
 output "public_subnet_ids" {
   description = "List of IDs of public subnets"
-  value = aws_subnet.public[*].id
+  value       = aws_subnet.public[*].id
 }
 
 ###############################################################
@@ -27,7 +27,7 @@ output "public_subnet_ids" {
 
 output "private_subnet_ids" {
   description = "List of IDs of private subnets"
-  value = aws_subnet.private[*].id
+  value       = aws_subnet.private[*].id
 }
 
 ###############################################################
@@ -36,5 +36,5 @@ output "private_subnet_ids" {
 
 output "igw_id" {
   description = "The ID of the Internet Gateway"
-  value = aws_internet_gateway.this.id
+  value       = aws_internet_gateway.this.id
 }

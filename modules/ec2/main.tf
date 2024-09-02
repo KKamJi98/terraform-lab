@@ -11,8 +11,8 @@ resource "aws_instance" "this" {
   key_name               = var.key_name
   iam_instance_profile   = var.iam_instance_profile
   vpc_security_group_ids = var.vpc_security_group_ids
-
-  user_data              = var.user_data
+  
+  user_data = var.user_data
   tags = merge(
     {
       Name = var.instance_name

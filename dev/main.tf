@@ -1,37 +1,113 @@
-module "vpc" {
-  source               = "../modules/vpc"
 
-  name                 = "kkamji-dev-vpc"
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
+#######################################
+# Deactivated
+#######################################
 
-  availability_zones = ["ap-northeast-2a", "ap-northeast-2c", "ap-northeast-2d"]
-  public_subnet_cidr_blocks = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  map_public_ip_on_launch = true
-  private_subnet_cidr_blocks = [ "10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24" ]
-  tags = {
-    Terraform = "true"
-    Environment = "dev"
-  }
-}
-
-module "ec2" {
+module "app" {
   source = "../modules/ec2"
   ami           = "ami-05d2438ca66594916"
   instance_type = "t2.micro"
   # element를 사용하면 에러 처리에 더 용이함
   subnet_id = module.vpc.public_subnet_ids[0]
   key_name = "kkam_key_pair"
-
+  vpc_security_group_ids = [ module.app_security_group.aws_security_group_id ]
   user_data = templatefile("${path.root}/template/user_data.sh", {
-    server_port = "8080"
+    server_port = "80"
   })
-  
+
   instance_name = "kkamji_instance"
 }
 
+#######################################
+# Activated
+#######################################
+module "vpc" {
+  source = "../modules/vpc"
 
+  name                 = "kkamji-dev-vpc"
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  availability_zones         = ["ap-northeast-2a", "ap-northeast-2c", "ap-northeast-2d"]
+  public_subnet_cidr_blocks  = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  map_public_ip_on_launch    = true
+  private_subnet_cidr_blocks = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
+
+module "app_security_group" {
+  source      = "../modules/security_group"
+  name        = "app security group"
+  description = "app security group for HTTP & HTTPS"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_rules = [
+    {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "HTTP"
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "HTTPS"
+    },
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "SSH"
+    }
+  ]
+
+  egress_rules = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "All outbound ports"
+    }
+  ]
+}
+
+######################################
+# Test
+######################################
+
+resource "aws_iam_user" "this" {
+  # count = length(var.user_names)
+  # name = var.user_names[count.index]
+  for_each = toset(var.user_names)
+  name     = each.value
+}
+
+variable "user_names" {
+  description = "IAM user name"
+  type        = list(string)
+  default     = ["neo", "morpheus"]
+}
+
+output "all_arns" {
+  description = "ARNs of all users"
+  # value = aws_iam_user.this[*].arn
+  value = aws_iam_user.this
+}
+
+
+######################################
+# 모듈로 변환할 리소스들
+######################################
 
 # resource "aws_instance" "app" {
 #   instance_type          = "t2.micro"
