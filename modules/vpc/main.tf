@@ -74,6 +74,25 @@ resource "aws_subnet" "private" {
   )
 }
 
+resource "aws_eip" "this" {
+  count = var.enable_nat_gateway ? 1 : 0
+
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "private" {
+  count = var.enable_nat_gateway ? 1 : 0
+
+  allocation_id = aws_eip.this[count.index].id
+  subnet_id = aws_subnet.public[1].id
+
+  tags = {
+    Name = "${var.name}-nat-gateway"
+  }
+
+  depends_on = [aws_internet_gateway.this]
+}
+
 ###############################################################
 # Internet Gateway
 ###############################################################

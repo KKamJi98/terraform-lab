@@ -8,7 +8,8 @@ module "app" {
   ami           = "ami-05d2438ca66594916"
   instance_type = "t2.micro"
   # element를 사용하면 에러 처리에 더 용이함
-  subnet_id = module.vpc.public_subnet_ids[0]
+  # subnet_id = module.vpc.public_subnet_ids[0]
+  subnet_id = module.vpc.private_subnet_ids[0]
   key_name = "kkam_key_pair"
   vpc_security_group_ids = [ module.app_security_group.aws_security_group_id ]
   user_data = templatefile("${path.root}/template/user_data.sh", {
@@ -32,7 +33,10 @@ module "vpc" {
   availability_zones         = ["ap-northeast-2a", "ap-northeast-2c", "ap-northeast-2d"]
   public_subnet_cidr_blocks  = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   map_public_ip_on_launch    = true
+  
   private_subnet_cidr_blocks = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  enable_nat_gateway = true
+  
   tags = {
     Terraform   = "true"
     Environment = "dev"

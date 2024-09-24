@@ -55,11 +55,17 @@ variable "map_public_ip_on_launch" {
 }
 
 ###############################################################
-# Public Subnets
+# Private Subnets
 ###############################################################
 
 variable "private_subnet_cidr_blocks" {
   description = "List of CIDR blocks for the subnets"
   type        = list(string)
   default     = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+}
+
+variable "enable_nat_gateway" {
+  description = "Enable NAT gateway"
+  type        = bool
+  default     = false
 }
