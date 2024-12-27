@@ -1,7 +1,7 @@
-output "public_ip" {
-  value       = module.app.public_ip
-  description = "The public IP address of the web server"
-}
+# output "public_ip" {
+#   value       = module.app.public_ip
+#   description = "The public IP address of the web server"
+# }
 
 output "key_pair_name" {
   value       = aws_key_pair.my_key.key_name
