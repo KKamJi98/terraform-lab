@@ -3,6 +3,11 @@
 # Deactivated
 #######################################
 
+module "key_pair" {
+  source = "../modules/key-pair"
+  key_name = "kkam_key_pair"
+}
+
 module "app" {
   source = "../modules/ec2"
   ami           = "ami-05d2438ca66594916"
@@ -10,7 +15,7 @@ module "app" {
   # element를 사용하면 에러 처리에 더 용이함
   # subnet_id = module.vpc.public_subnet_ids[0]
   subnet_id = module.vpc.private_subnet_ids[0]
-  key_name = "kkam_key_pair"
+  key_name = module.key_pair.key_pair_name
   vpc_security_group_ids = [ module.app_security_group.aws_security_group_id ]
   user_data = templatefile("${path.root}/template/user_data.sh", {
     server_port = "80"
@@ -35,7 +40,7 @@ module "vpc" {
   map_public_ip_on_launch    = true
   
   private_subnet_cidr_blocks = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
-  enable_nat_gateway = true
+  enable_nat_gateway = false
   
   tags = {
     Terraform   = "true"

@@ -1,7 +1,8 @@
-# output "public_ip" {
-#   value       = module.ec2.public_ip
-#   description = "The public IP address of the web server"
-# }
+output "public_ip" {
+  value       = module.app.public_ip
+  description = "The public IP address of the web server"
+}
+
 # terraform output
 # terraform output public_ip
 
