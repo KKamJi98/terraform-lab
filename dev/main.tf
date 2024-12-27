@@ -15,7 +15,7 @@ module "app" {
   # element를 사용하면 에러 처리에 더 용이함
   # subnet_id = module.vpc.public_subnet_ids[0]
   subnet_id              = module.vpc.public_subnet_ids[0]
-  key_name               = module.key_pair.key_pair_name
+  key_name               = aws_key_pair.my_key.key_name
   vpc_security_group_ids = [module.app_security_group.aws_security_group_id]
   user_data = templatefile("${path.root}/template/user_data.sh", {
     server_port = "80"

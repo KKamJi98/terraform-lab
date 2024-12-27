@@ -4,7 +4,7 @@ output "public_ip" {
 }
 
 output "key_pair_name" {
-  value       = module.key_pair.key_pair_name
+  value       = aws_key_pair.my_key.key_name
   description = "The name of the key pair used to launch the server"
 }
 
