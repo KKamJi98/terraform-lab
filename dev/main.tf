@@ -3,26 +3,26 @@
 # Deactivated
 #######################################
 
-resource "aws_key_pair" "my_key" {
-  key_name   = "kkamji_key_2024"
-  public_key = var.public_key_string
-}
+# module "app" {
+#   source        = "../modules/ec2"
+#   ami           = "ami-05d2438ca66594916"
+#   instance_type = "t2.micro"
+#   # element를 사용하면 에러 처리에 더 용이함
+#   # subnet_id = module.vpc.public_subnet_ids[0]
+#   subnet_id              = module.vpc.public_subnet_ids[0]
+#   key_name               = aws_key_pair.my_key.key_name
+#   vpc_security_group_ids = [module.app_security_group.aws_security_group_id]
+#   user_data = templatefile("${path.root}/template/user_data.sh", {
+#     server_port = "80"
+#   })
 
-module "app" {
-  source        = "../modules/ec2"
-  ami           = "ami-05d2438ca66594916"
-  instance_type = "t2.micro"
-  # element를 사용하면 에러 처리에 더 용이함
-  # subnet_id = module.vpc.public_subnet_ids[0]
-  subnet_id              = module.vpc.public_subnet_ids[0]
-  key_name               = aws_key_pair.my_key.key_name
-  vpc_security_group_ids = [module.app_security_group.aws_security_group_id]
-  user_data = templatefile("${path.root}/template/user_data.sh", {
-    server_port = "80"
-  })
+#   instance_name = "kkamji_instance"
 
-  instance_name = "kkamji_instance"
-}
+#   tags = {
+#     Terraform   = "true"
+#     Environment = "dev"
+#   }
+# }
 
 #######################################
 # Activated
@@ -40,7 +40,7 @@ module "vpc" {
   map_public_ip_on_launch   = true
 
   private_subnet_cidr_blocks = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
-  enable_nat_gateway         = false
+  enable_nat_gateway         = false # true or false
 
   tags = {
     Terraform   = "true"
@@ -88,7 +88,19 @@ module "app_security_group" {
       description = "All outbound ports"
     }
   ]
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
 }
+
+resource "aws_key_pair" "my_key" {
+  key_name   = "kkamji_key_2024"
+  public_key = var.public_key_string
+}
+
+
 
 ######################################
 # Test
@@ -99,6 +111,11 @@ resource "aws_iam_user" "this" {
   # name = var.user_names[count.index]
   for_each = toset(var.user_names)
   name     = each.value
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
 }
 
 variable "user_names" {

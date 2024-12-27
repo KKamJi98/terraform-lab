@@ -1,5 +1,9 @@
 # terraform-study
 
+## TODO
+
+- [ ] ec2 instance profile 생성하기
+
 ```bash
 .
 ├── README.md
