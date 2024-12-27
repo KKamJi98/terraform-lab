@@ -3,6 +3,11 @@ output "public_ip" {
   description = "The public IP address of the web server"
 }
 
+output "key_pair_name" {
+  value       = module.key_pair.key_pair_name
+  description = "The name of the key pair used to launch the server"
+}
+
 # terraform output
 # terraform output public_ip
 

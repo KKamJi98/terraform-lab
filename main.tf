@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "kkamji-terraform-state"
+  bucket              = "kkamji-terraform-state"
   object_lock_enabled = true
   lifecycle {
     # 삭제 방지

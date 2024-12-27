@@ -9,3 +9,9 @@ variable "region" {
   type        = string
   default     = "ap-southeast-1"
 }
+
+variable "public_key_string" {
+  description = "The public key to use for SSH access"
+  type        = string
+  sensitive   = true
+}
