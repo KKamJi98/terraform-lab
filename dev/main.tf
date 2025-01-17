@@ -48,7 +48,6 @@ module "vpc" {
   }
 }
 
-
 module "app_security_group" {
   source      = "../modules/security_group"
   name        = "app security group"
