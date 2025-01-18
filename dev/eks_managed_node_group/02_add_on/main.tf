@@ -54,13 +54,13 @@ resource "aws_eks_addon" "coredns" {
 ## Addon: eks-pod-identity
 ###########################################################################################
 
-data "aws_eks_addon_version" "eks-pod-identity" {
+data "aws_eks_addon_version" "eks-pod-identity-agent" {
   addon_name         = "eks-pod-identity"
   kubernetes_version = data.terraform_remote_state.cluster.outputs.cluster_version
   most_recent        = true
 }
 
-resource "aws_eks_addon" "eks-pod-identity" {
+resource "aws_eks_addon" "eks-pod-identity-agent" {
   cluster_name                = data.terraform_remote_state.cluster.outputs.cluster_name
   addon_name                  = "eks-pod-identity"
   addon_version               = data.aws_eks_addon_version.eks-pod-identity.version
