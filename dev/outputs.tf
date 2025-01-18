@@ -25,7 +25,7 @@ output "all_arns" {
 }
 
 output "app_security_group_id" {
-  value       = module.app_security_group.this.id
+  value       = module.app_security_group.aws_security_group_id
   description = "The ID of the application security group"
 }
 
