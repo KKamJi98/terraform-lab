@@ -123,11 +123,7 @@ variable "user_names" {
   default     = ["neo", "morpheus"]
 }
 
-output "all_arns" {
-  description = "ARNs of all users"
-  # value = aws_iam_user.this[*].arn
-  value = aws_iam_user.this
-}
+
 
 
 ######################################

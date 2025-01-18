@@ -18,6 +18,11 @@ output "private_subnet_ids" {
   description = "The IDs of the private subnets"
 }
 
+output "all_arns" {
+  description = "ARNs of all users"
+  # value = aws_iam_user.this[*].arn
+  value = aws_iam_user.this
+}
 # terraform output
 # terraform output public_ip
 

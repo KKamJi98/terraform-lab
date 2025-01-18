@@ -5,7 +5,6 @@ module "eks" {
   cluster_name    = "kkamji-cluster"
   cluster_version = "1.31"
 
-  bootstrap_self_managed_addons = false
   cluster_addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
@@ -26,18 +25,18 @@ module "eks" {
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
     # instance_types = ["t3.medium", "m5.large", "m5n.large", "m5zn.large"]
-    instance_types = ["t3.medium"]
+    instance_types = ["m7i.large"]
   }
 
   eks_managed_node_groups = {
-    example = {
+    kkamji_nodes = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       ami_type       = "AL2023_x86_64_STANDARD"
-      instance_types = ["t3.medium"]
-
-      min_size     = 1
-      max_size     = 1
-      desired_size = 1
+      instance_types = ["m7i.large"]
+      min_size       = 1
+      max_size       = 3
+      desired_size   = 1
+      key_name       = data.terraform_remote_state.basic.outputs.key_pair_name
     }
   }
 
