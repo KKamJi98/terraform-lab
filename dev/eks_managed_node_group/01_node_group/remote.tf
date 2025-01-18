@@ -8,12 +8,12 @@ data "terraform_remote_state" "basic" {
   }
 }
 
-data "terraform_remote_state" "eks" {
+data "terraform_remote_state" "cluster" {
   backend = "remote"
   config = {
     organization = "KKamJi"
     workspaces = {
-      name = "eks"
+      name = "eks_mng_cluster"
     }
   }
 }
