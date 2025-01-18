@@ -23,6 +23,12 @@ output "all_arns" {
   # value = aws_iam_user.this[*].arn
   value = aws_iam_user.this
 }
+
+output "app_security_group_id" {
+  value       = module.app_security_group.this.id
+  description = "The ID of the application security group"
+}
+
 # terraform output
 # terraform output public_ip
 
