@@ -2,7 +2,6 @@ locals {
   default_update_config = {
     max_unavailable_percentage = 50
   }
-
 }
 
 module "eks_managed_node_group" {
