@@ -4,14 +4,16 @@ locals {
   }
 }
 
+## Provisioning EKS Cluster
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.0"
+  version = "~> 20.33"
 
-  cluster_name    = "kkamji-cluster-simple"
+  cluster_name    = "kkamji-al2023"
   cluster_version = "1.31"
 
-  bootstrap_self_managed_addons = false
+  # bootstrap_self_managed_addons = false
   cluster_addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
@@ -25,32 +27,50 @@ module "eks" {
   # Optional: Adds the current caller identity as an administrator via cluster access entry
   enable_cluster_creator_admin_permissions = true
 
-  vpc_id                   = data.terraform_remote_state.basic.outputs.vpc_id
-  subnet_ids               = data.terraform_remote_state.basic.outputs.public_subnet_ids
-  control_plane_subnet_ids = data.terraform_remote_state.basic.outputs.public_subnet_ids
+  vpc_id     = data.terraform_remote_state.basic.outputs.vpc_id
+  subnet_ids = data.terraform_remote_state.basic.outputs.public_subnet_ids
+  # control_plane_subnet_ids = data.terraform_remote_state.basic.outputs.public_subnet_ids
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    instance_types = ["t4g.small"]
+    instance_types = ["m6i.large", "t3.medium", "t4g.small"]
   }
 
   eks_managed_node_groups = {
-    kkamji_node_group = {
+    kkamji = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       ami_type       = "AL2023_ARM_64_STANDARD"
       instance_types = ["t4g.small"]
       capacity_type  = "SPOT"
+      # capacity_type  = "ONDEMAND"
 
       min_size     = 1
       max_size     = 3
       desired_size = 1
 
-      key_name = data.terraform_remote_state.basic.outputs.key_pair_name
+      key_name      = data.terraform_remote_state.basic.outputs.key_pair_name
+      update_config = local.default_update_config
+      # cloudinit_pre_nodeadm = [
+      #   {
+      #     content_type = "application/node.eks.aws"
+      #     content      = <<-EOT
+      #       ---
+      #       apiVersion: node.eks.aws/v1alpha1
+      #       kind: NodeConfig
+      #       spec:
+      #         kubelet:
+      #           config:
+      #             shutdownGracePeriod: 30s
+      #             featureGates:
+      #               DisableKubeletCloudCredentialProviders: true
+      #     EOT
+      #   }
+      # ]
     }
   }
 
-  # 테스트 용에서만 (실제로는 사용하지 않음) kms 키는 바로 삭제가 안됨됨
-  attach_cluster_encryption_policy = false
+  # 테스트 용에서만 (실제로는 사용하지 않음) - kms 키는 바로 삭제가 안됨
+  cluster_encryption_config = {}
 
   tags = {
     Environment = "dev"
