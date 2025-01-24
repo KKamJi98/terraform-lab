@@ -41,8 +41,8 @@ module "eks" {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       ami_type       = "AL2023_ARM_64_STANDARD"
       instance_types = ["t4g.small"]
-      capacity_type  = "SPOT"
-      # capacity_type  = "ONDEMAND"
+      # capacity_type  = "SPOT"
+      capacity_type = "ONDEMAND" # ONDEMAND로 해야 Free Tier가 적용됨 SPOT (X)
 
       min_size     = 1
       max_size     = 3
