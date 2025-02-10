@@ -11,7 +11,7 @@ module "eks" {
   version = "~> 20.33"
 
   cluster_name    = "kkamji-al2023"
-  cluster_version = "1.31"
+  cluster_version = "1.32"
 
   # bootstrap_self_managed_addons = false
   cluster_addons = {
@@ -19,6 +19,7 @@ module "eks" {
     eks-pod-identity-agent = {}
     kube-proxy             = {}
     vpc-cni                = {}
+    # amazon-cloudwatch-observability = {}
   }
 
   # Optional
@@ -42,7 +43,7 @@ module "eks" {
       ami_type       = "AL2023_ARM_64_STANDARD"
       instance_types = ["t4g.small"]
       # capacity_type  = "SPOT"
-      capacity_type = "ONDEMAND" # ONDEMAND로 해야 Free Tier가 적용됨 SPOT (X)
+      capacity_type = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
 
       min_size     = 1
       max_size     = 3
