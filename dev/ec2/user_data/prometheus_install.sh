@@ -90,3 +90,6 @@ cat <<EOT >> /etc/prometheus/prometheus.yml
     static_configs:
       - targets: ['localhost:9100']
 EOT
+
+# 12. Prometheus 서비스 재시작
+systemctl restart prometheus
