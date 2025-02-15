@@ -19,7 +19,7 @@ terraform {
     organization = "KKamJi"
 
     workspaces {
-      name = "dev_ec2"
+      name = "ec2"
     }
   }
 }
