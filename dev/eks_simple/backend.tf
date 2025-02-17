@@ -3,7 +3,7 @@ terraform {
     organization = "KKamJi"
 
     workspaces {
-      name = "dev_eks_simple"
+      name = "eks_simple"
     }
   }
 }
