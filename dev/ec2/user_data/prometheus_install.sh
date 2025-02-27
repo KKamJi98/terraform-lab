@@ -113,16 +113,21 @@ pip3 install --break-system-packages prometheus_client
 # -----------------------------
 cat <<'EOF' > /opt/app_server.py
 import http.server
+import random
 from prometheus_client import start_http_server, Counter
 
-REQUEST_COUNT = Counter('app_requests_count', 'total app http requestcount')
+REQUEST_COUNT = Counter('app_requests_count', 'total app http requestcount', ['app_name', 'endpoint'])
+RANDOM_COUNT = Counter('app_random_count', 'increment counter by random value')
 
 APP_PORT = 18080
 METRICS_PORT = 18081
 
 class HandleRequests(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        REQUEST_COUNT.inc()
+        REQUEST_COUNT.labels('prom_python_app', self.path).inc()
+        random_val = random.random()*10
+        RANDOM_COUNT.inc(random_val)
+        
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
