@@ -6,7 +6,7 @@ resource "aws_instance" "kkamji-ec2" {
   }
 
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       user_data,
       user_data_replace_on_change
     ]
