@@ -98,13 +98,27 @@ resource "aws_key_pair" "my_key" {
   public_key = var.public_key_string
 }
 
-resource "aws_iam_user" "this" {
-  for_each = toset(var.user_names)
-  name     = each.value
+
+resource "aws_iam_user" "external_secrets" {
+  name = "external-secrets"
   tags = {
     Terraform   = "true"
     Environment = "dev"
   }
+}
+
+resource "aws_iam_user" "external_dns" {
+  name = "external_dns"
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
+resource "aws_iam_policy_attachment" "external_secrets_policy" {
+  name       = "external_secrets_policy_attachment"
+  users      = [aws_iam_user.external_secrets.name]
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
 }
 
 ######################################

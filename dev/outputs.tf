@@ -18,10 +18,15 @@ output "private_subnet_ids" {
   description = "The IDs of the private subnets"
 }
 
-output "all_arns" {
-  description = "ARNs of all users"
+output "external_secrets_user_arn" {
+  description = "The ARN of the external secrets user"
   # value = aws_iam_user.this[*].arn
-  value = aws_iam_user.this
+  value = aws_iam_user.external_secrets.arn
+}
+
+output "external_dns_user_arn" {
+  description = "The ARN of the external DNS user"
+  value       = aws_iam_user.external_dns.arn
 }
 
 output "app_security_group_id" {
