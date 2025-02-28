@@ -27,8 +27,8 @@ module "eks" {
   # Optional: Adds the current caller identity as an administrator via cluster access entry
   enable_cluster_creator_admin_permissions = true
 
-  vpc_id     = data.terraform_remote_state.basic.outputs.vpc_id
-  subnet_ids = data.terraform_remote_state.basic.outputs.public_subnet_ids
+  vpc_id                   = data.terraform_remote_state.basic.outputs.vpc_id
+  subnet_ids               = data.terraform_remote_state.basic.outputs.public_subnet_ids
   control_plane_subnet_ids = data.terraform_remote_state.basic.outputs.public_subnet_ids
 
   # EKS Managed Node Group(s)
@@ -40,7 +40,7 @@ module "eks" {
     application = {
       ami_type       = "AL2023_ARM_64_STANDARD"
       instance_types = ["t4g.small"]
-      capacity_type = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
+      capacity_type  = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
 
       min_size     = 1
       max_size     = 3
