@@ -15,3 +15,9 @@ variable "public_key_string" {
   type        = string
   sensitive   = true
 }
+
+variable "user_names" {
+  description = "IAM user name"
+  type        = list(string)
+  default     = ["secrets_manager", "external_dns"]
+}

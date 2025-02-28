@@ -1,4 +1,3 @@
-
 #######################################
 # Deactivated
 #######################################
@@ -99,32 +98,18 @@ resource "aws_key_pair" "my_key" {
   public_key = var.public_key_string
 }
 
-
-
-######################################
-# Test
-######################################
-
 resource "aws_iam_user" "this" {
-  # count = length(var.user_names)
-  # name = var.user_names[count.index]
   for_each = toset(var.user_names)
   name     = each.value
-
   tags = {
     Terraform   = "true"
     Environment = "dev"
   }
 }
 
-variable "user_names" {
-  description = "IAM user name"
-  type        = list(string)
-  default     = ["neo", "morpheus"]
-}
-
-
-
+######################################
+# Test
+######################################
 
 ######################################
 # 모듈로 변환할 리소스들
