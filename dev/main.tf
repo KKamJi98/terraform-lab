@@ -1,31 +1,7 @@
 #######################################
-# Deactivated
+# VPC
 #######################################
 
-# module "app" {
-#   source        = "../modules/ec2"
-#   ami           = "ami-05d2438ca66594916"
-#   instance_type = "t2.micro"
-#   # element를 사용하면 에러 처리에 더 용이함
-#   # subnet_id = module.vpc.public_subnet_ids[0]
-#   subnet_id              = module.vpc.public_subnet_ids[0]
-#   key_name               = aws_key_pair.my_key.key_name
-#   vpc_security_group_ids = [module.app_security_group.aws_security_group_id]
-#   user_data = templatefile("${path.root}/template/user_data.sh", {
-#     server_port = "80"
-#   })
-
-#   instance_name = "kkamji_instance"
-
-#   tags = {
-#     Terraform   = "true"
-#     Environment = "dev"
-#   }
-# }
-
-#######################################
-# Activated
-#######################################
 module "vpc" {
   source = "../modules/vpc"
 
@@ -46,6 +22,10 @@ module "vpc" {
     Environment = "dev"
   }
 }
+
+#######################################
+# Security Groups
+#######################################
 
 module "app_security_group" {
   source      = "../modules/security_group"
@@ -93,12 +73,18 @@ module "app_security_group" {
   }
 }
 
+#######################################
+# EC2 Key Pair
+#######################################
+
 resource "aws_key_pair" "my_key" {
   key_name   = "kkamji_key_2024"
   public_key = var.public_key_string
 }
 
-
+#######################################
+# IAM
+#######################################
 resource "aws_iam_user" "external_secrets" {
   name = "external-secrets"
   tags = {
@@ -115,11 +101,44 @@ resource "aws_iam_user" "external_dns" {
   }
 }
 
-resource "aws_iam_policy_attachment" "external_secrets_policy" {
+resource "aws_iam_policy_attachment" "external_secrets_secrets_manager_policy" {
   name       = "external_secrets_policy_attachment"
   users      = [aws_iam_user.external_secrets.name]
   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
 }
+
+resource "aws_iam_policy_attachment" "external_secrets_parameter_store_policy" {
+  name       = "external_secrets_policy_attachment"
+  users      = [aws_iam_user.external_secrets.name]
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+}
+
+
+#######################################
+# Deactivated
+#######################################
+
+# module "app" {
+#   source        = "../modules/ec2"
+#   ami           = "ami-05d2438ca66594916"
+#   instance_type = "t2.micro"
+#   # element를 사용하면 에러 처리에 더 용이함
+#   # subnet_id = module.vpc.public_subnet_ids[0]
+#   subnet_id              = module.vpc.public_subnet_ids[0]
+#   key_name               = aws_key_pair.my_key.key_name
+#   vpc_security_group_ids = [module.app_security_group.aws_security_group_id]
+#   user_data = templatefile("${path.root}/template/user_data.sh", {
+#     server_port = "80"
+#   })
+
+#   instance_name = "kkamji_instance"
+
+#   tags = {
+#     Terraform   = "true"
+#     Environment = "dev"
+#   }
+# }
+
 
 ######################################
 # Test
