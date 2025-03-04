@@ -11,7 +11,7 @@ module "eks" {
   version = "~> 20.33"
 
   cluster_name    = "kkamji-al2023"
-  cluster_version = "1.29"
+  cluster_version = "1.32"
 
   # bootstrap_self_managed_addons = false
   cluster_addons = {
@@ -19,6 +19,7 @@ module "eks" {
     eks-pod-identity-agent = {}
     kube-proxy             = {}
     vpc-cni                = {}
+    aws-ebs-csi-driver     = {}
   }
 
   # Optional
