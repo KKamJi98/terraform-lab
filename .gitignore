@@ -60,3 +60,4 @@ terraform.rc
 # *key*
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,terraform
+.DS_Store
