@@ -6,6 +6,10 @@ output "cluster_version" {
   value = module.eks.cluster_version
 }
 
+output "cluster_endpoint" {
+  value = module.eks.cluster_endpoint
+}
+
 output "cluster_primary_security_group_id" {
   value       = module.eks.cluster_primary_security_group_id
   description = "The ID of the primary security group of the EKS cluster"
