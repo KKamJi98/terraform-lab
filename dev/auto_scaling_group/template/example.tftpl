@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "Hello, ${name}"
+echo "환경: ${environment}"
+
+apt update; apt install -y nginx
+systemctl enable --now nginx
