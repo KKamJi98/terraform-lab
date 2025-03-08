@@ -51,8 +51,23 @@ resource "aws_security_group" "test_sg" {
 ## EC2 Instance (Prometheus)
 ##########################################################
 
+data "aws_ssm_parameter" "ubuntu_24_04_ami" {
+  name = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
+}
+
+data "aws_ami" "ubuntu_24_04" {
+  most_recent = true
+  owners      = ["099720109477"]
+
+  filter {
+    name   = "image-id"
+    values = [data.aws_ssm_parameter.ubuntu_24_04_ami.value]
+  }
+}
+
 resource "aws_instance" "prometheus_ec2" {
-  ami                    = "ami-0b5511d5304edfc79"
+  # ami                    = "ami-0b5511d5304edfc79"
+  ami                    = data.aws_ami.ubuntu_24_04.id
   instance_type          = "t4g.small"
   subnet_id              = data.terraform_remote_state.basic.outputs.public_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.test_sg.id]
