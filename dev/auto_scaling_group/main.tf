@@ -30,11 +30,6 @@ resource "aws_security_group" "test_asg_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
 }
 
 ##########################################################
@@ -60,19 +55,24 @@ resource "aws_autoscaling_group" "test_asg" {
   health_check_grace_period = 120
   health_check_type         = "ELB"
   vpc_zone_identifier       = slice(data.terraform_remote_state.basic.outputs.public_subnet_ids, 0, 2)
+  termination_policies = ["OldestInstance"]
+  target_group_arns = [aws_lb_target_group.test_tg.arn] # Target Group 연결
 
   launch_template {
     id      = aws_launch_template.test_lt.id
     version = "$Latest"
   }
 
-  # Target Group 연결
-  target_group_arns = [
-    aws_lb_target_group.test_tg.arn
-  ]
 
-  # (선택) 헬스 체크 타입을 ELB로 변경
-
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 80   # 기존 인스턴스의 일부만 헬시해도 업데이트 진행
+      instance_warmup        = 180  # 인스턴스 헬스체크 준비 시간을 180초로 단축
+    }
+    triggers = ["desired_capacity", "launch_template"] # desired_capacity 혹은 launch_template에 변경사항이 발생했을 때 롤링 업데이트
+  }
+  
   tag {
     key                 = "Terraform"
     value               = "true"
@@ -99,11 +99,6 @@ resource "aws_lb" "test_alb" {
   load_balancer_type = "application"
   subnets            = data.terraform_remote_state.basic.outputs.public_subnet_ids
   security_groups    = [aws_security_group.test_asg_sg.id]
-
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
 }
 
 resource "aws_lb_target_group" "test_tg" {
@@ -118,11 +113,6 @@ resource "aws_lb_target_group" "test_tg" {
     path     = "/"
     # 필요에 따라 interval, matcher, etc. 세부 설정 가능
   }
-
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
 }
 
 resource "aws_lb_listener" "test_listener" {
@@ -133,10 +123,5 @@ resource "aws_lb_listener" "test_listener" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.test_tg.arn
-  }
-
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
   }
 }
