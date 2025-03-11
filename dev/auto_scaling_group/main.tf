@@ -55,8 +55,8 @@ resource "aws_autoscaling_group" "test_asg" {
   health_check_grace_period = 120
   health_check_type         = "ELB"
   vpc_zone_identifier       = slice(data.terraform_remote_state.basic.outputs.public_subnet_ids, 0, 2)
-  termination_policies = ["OldestInstance"]
-  target_group_arns = [aws_lb_target_group.test_tg.arn] # Target Group 연결
+  termination_policies      = ["OldestInstance"]
+  target_group_arns         = [aws_lb_target_group.test_tg.arn] # Target Group 연결
 
   launch_template {
     id      = aws_launch_template.test_lt.id
@@ -67,12 +67,13 @@ resource "aws_autoscaling_group" "test_asg" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 80   # 기존 인스턴스의 일부만 헬시해도 업데이트 진행
-      instance_warmup        = 180  # 인스턴스 헬스체크 준비 시간을 180초로 단축
+      min_healthy_percentage = 80  # 기존 인스턴스의 일부만 헬시해도 업데이트 진행
+      instance_warmup        = 180 # 인스턴스 헬스체크 준비 시간을 180초로 단축
     }
-    triggers = ["desired_capacity", "launch_template"] # desired_capacity 혹은 launch_template에 변경사항이 발생했을 때 롤링 업데이트
+    triggers = ["desired_capacity"] # desired_capacity 혹은 launch_template에 변경사항이 발생했을 때 롤링 업데이트
+    # triggers = ["desired_capacity", "launch_template"] # desired_capacity 혹은 launch_template에 변경사항이 발생했을 때 롤링 업데이트
   }
-  
+
   tag {
     key                 = "Terraform"
     value               = "true"
@@ -102,10 +103,10 @@ resource "aws_lb" "test_alb" {
 }
 
 resource "aws_lb_target_group" "test_tg" {
-  name     = "test-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = data.terraform_remote_state.basic.outputs.vpc_id
+  name                 = "test-tg"
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = data.terraform_remote_state.basic.outputs.vpc_id
   deregistration_delay = 120
 
   health_check {
