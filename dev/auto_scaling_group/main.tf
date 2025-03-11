@@ -51,7 +51,7 @@ resource "aws_autoscaling_group" "test_asg" {
   name                      = local.asg_name
   max_size                  = 3
   min_size                  = 1
-  desired_capacity          = 2
+  desired_capacity          = 3
   health_check_grace_period = 120
   health_check_type         = "ELB"
   vpc_zone_identifier       = slice(data.terraform_remote_state.basic.outputs.public_subnet_ids, 0, 2)
@@ -70,8 +70,8 @@ resource "aws_autoscaling_group" "test_asg" {
       min_healthy_percentage = 80  # 기존 인스턴스의 일부만 헬시해도 업데이트 진행
       instance_warmup        = 180 # 인스턴스 헬스체크 준비 시간을 180초로 단축
     }
-    triggers = ["desired_capacity"] # desired_capacity 혹은 launch_template에 변경사항이 발생했을 때 롤링 업데이트
-    # triggers = ["desired_capacity", "launch_template"] # desired_capacity 혹은 launch_template에 변경사항이 발생했을 때 롤링 업데이트
+    # triggers = ["desired_capacity"] # desired_capacity 혹은 launch_template에 변경사항이 발생했을 때 롤링 업데이트
+    triggers = ["desired_capacity", "launch_template"] # desired_capacity 혹은 launch_template에 변경사항이 발생했을 때 롤링 업데이트
   }
 
   tag {
