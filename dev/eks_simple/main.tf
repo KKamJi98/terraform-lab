@@ -41,15 +41,15 @@ module "eks" {
 
   eks_managed_node_groups = {
     application = {
-      node_group_name = "application-2"
-      ami_type       = "AL2023_ARM_64_STANDARD"
+      node_group_name = "application"
+      ami_type        = "AL2023_ARM_64_STANDARD"
       # ami_type       = "AL2_ARM_64"
       instance_types = ["t4g.small"]
       capacity_type  = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
 
       min_size     = 1
-      max_size     = 12
-      desired_size = 12
+      max_size     = 3
+      desired_size = 1
 
       key_name = data.terraform_remote_state.basic.outputs.key_pair_name
 
@@ -97,11 +97,6 @@ module "eks" {
 
   # 테스트 용에서만 (실제로는 사용하지 않음) - kms 키는 바로 삭제가 안됨
   cluster_encryption_config = {}
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
 }
 
 
