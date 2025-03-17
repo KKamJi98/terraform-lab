@@ -56,43 +56,43 @@ module "eks" {
       update_config = local.default_update_config
 
       labels = {
-        "node.kubernetes.io/app" = "application"
+        "node.kubernetes.io/nodegroup" = "application"
       }
     }
 
-    # operation = {
-    #   # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
-    #   ami_type       = "AL2023_ARM_64_STANDARD"
-    #   instance_types = ["t4g.small"]
-    #   # capacity_type  = "SPOT"
-    #   capacity_type = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
+    operation = {
+      # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
+      ami_type       = "AL2023_ARM_64_STANDARD"
+      instance_types = ["t4g.small"]
+      # capacity_type  = "SPOT"
+      capacity_type = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
 
-    #   min_size     = 1
-    #   max_size     = 3
-    #   desired_size = 1
+      min_size     = 1
+      max_size     = 3
+      desired_size = 1
 
-    #   key_name      = data.terraform_remote_state.basic.outputs.key_pair_name
-    #   update_config = local.default_update_config
-    #   # cloudinit_pre_nodeadm = [
-    #   #   {
-    #   #     content_type = "application/node.eks.aws"
-    #   #     content      = <<-EOT
-    #   #       ---
-    #   #       apiVersion: node.eks.aws/v1alpha1
-    #   #       kind: NodeConfig
-    #   #       spec:
-    #   #         kubelet:
-    #   #           config:
-    #   #             shutdownGracePeriod: 30s
-    #   #             featureGates:
-    #   #               DisableKubeletCloudCredentialProviders: true
-    #   #     EOT
-    #   #   }
-    #   # ]
-    #   labels = {
-    #     "node.kubernetes.io/app" = "operation"
-    #   }
-    # }
+      key_name      = data.terraform_remote_state.basic.outputs.key_pair_name
+      update_config = local.default_update_config
+      # cloudinit_pre_nodeadm = [
+      #   {
+      #     content_type = "application/node.eks.aws"
+      #     content      = <<-EOT
+      #       ---
+      #       apiVersion: node.eks.aws/v1alpha1
+      #       kind: NodeConfig
+      #       spec:
+      #         kubelet:
+      #           config:
+      #             shutdownGracePeriod: 30s
+      #             featureGates:
+      #               DisableKubeletCloudCredentialProviders: true
+      #     EOT
+      #   }
+      # ]
+      labels = {
+        "node.kubernetes.io/nodegroup" = "operation"
+      }
+    }
   }
 
   # 테스트 용에서만 (실제로는 사용하지 않음) - kms 키는 바로 삭제가 안됨
