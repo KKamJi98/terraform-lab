@@ -56,7 +56,7 @@ module "eks" {
       update_config = local.default_update_config
 
       labels = {
-        "node.kubernetes.io/nodegroup" = "application"
+        "node.kubernetes.io/app" = "application"
       }
     }
 
@@ -90,7 +90,7 @@ module "eks" {
       #   }
       # ]
       labels = {
-        "node.kubernetes.io/nodegroup" = "operation"
+        "node.kubernetes.io/app" = "operation"
       }
     }
   }
