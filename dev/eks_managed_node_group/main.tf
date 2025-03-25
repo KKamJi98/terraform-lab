@@ -1,31 +1,32 @@
+######################################################################
+## EKS Cluster
+######################################################################
+resource "aws_eks_cluster" "kkamji_cluster" {
+  name = "kkamji-al2023"
 
-
-module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.33"
-
-  cluster_name    = "kkamji"
-  cluster_version = "1.31"
-
-  # cluster_addons = {
-  #   coredns                = {}
-  #   eks-pod-identity-agent = {}
-  #   kube-proxy             = {}
-  #   vpc-cni                = {}
-  # }
-
-  # Optional
-  cluster_endpoint_public_access = true
-
-  # Optional: Adds the current caller identity as an administrator via cluster access entry
-  enable_cluster_creator_admin_permissions = true
-
-  vpc_id                   = data.terraform_remote_state.basic.outputs.vpc_id
-  subnet_ids               = data.terraform_remote_state.basic.outputs.public_subnet_ids
-  control_plane_subnet_ids = data.terraform_remote_state.basic.outputs.public_subnet_ids
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
+  access_config {
+    authentication_mode                         = "API_AND_CONFIG_MAP"
+    bootstrap_cluster_creator_admin_permissions = true # 클러스터를 생성한 IAM 사용자 또는 역할에게 자동으로 Kubernetes 클러스터에 대한 전체 관리 권한(admin)을 부여할지 여부 (false로 설정하면, 사용자 또는 역할에게 IAM 정책을 직접 부여해야 함)
   }
+
+  role_arn = aws_iam_role.kkamji_cluster.arn
+  version  = "1.32"
+
+  vpc_config {
+    endpoint_private_access = true
+    endpoint_public_access  = true
+    public_access_cidrs     = var.public_access_cidrs
+
+    subnet_ids = data.terraform_remote_state.basic.outputs.public_subnet_ids
+    # security_group_ids = #나중에 추가
+  }
+
+  kubernetes_network_config {
+    ip_family         = "ipv4"
+    service_ipv4_cidr = "172.20.0.0/16"
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.kkamji_cluster,
+  ]
 }

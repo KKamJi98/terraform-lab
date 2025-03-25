@@ -1,12 +1,12 @@
 ######################################################################
-## Terraform Remote State Data Source
+## HCP Terraform Backend Configuration
 ######################################################################
-data "terraform_remote_state" "basic" {
-  backend = "remote"
-  config = {
+terraform {
+  cloud {
     organization = "KKamJi"
-    workspaces = {
-      name = "basic"
+
+    workspaces {
+      name = "eks_mng_cluster"
     }
   }
 }
