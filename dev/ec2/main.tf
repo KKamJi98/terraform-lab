@@ -14,6 +14,14 @@ resource "aws_security_group" "test_sg" {
     cidr_blocks = var.my_ip
   }
 
+  ingress {
+    description     = "Allow traffic from the same SG"
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    self = true
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -28,84 +36,26 @@ resource "aws_security_group" "test_sg" {
 }
 
 ##########################################################
-## EC2 Instance
+## EC2 Instance - InfluxDB (Ubuntu24.04, CentOS7)
 ##########################################################
 
-# resource "aws_instance" "basic_ec2" {
-#   ami                    = "ami-0b5511d5304edfc79" #Ubuntu 24.04 arm64
-#   instance_type          = "t4g.small"
-#   subnet_id              = data.terraform_remote_state.basic.outputs.public_subnet_ids[0]
-#   vpc_security_group_ids = [aws_security_group.test_sg.id]
-#   key_name               = data.terraform_remote_state.basic.outputs.key_pair_name
-
-#   tags = {
-#     Terraform   = "true"
-#     Environment = "dev"
-#     Name        = "basic_ec2"
-#   }
-
-#   depends_on = [aws_security_group.test_sg]
-# }
-
-##########################################################
-## EC2 Instance (Prometheus)
-##########################################################
-
-data "aws_ssm_parameter" "ubuntu_24_04_ami" {
-  name = "/aws/service/canonical/ubuntu/server/24.04/stable/current/arm64/hvm/ebs-gp3/ami-id"
-}
-
-data "aws_ami" "ubuntu_24_04" {
-  most_recent = true
-  owners      = ["099720109477"]
-
-  filter {
-    name   = "image-id"
-    values = [data.aws_ssm_parameter.ubuntu_24_04_ami.value]
-  }
-}
-
-resource "aws_instance" "prometheus_ec2" {
-  # ami                    = "ami-0b5511d5304edfc79"
-  ami                    = data.aws_ami.ubuntu_24_04.id
-  instance_type          = "t4g.small"
+resource "aws_instance" "influxdb_ubuntu_24_04" {
+  count                  = 2
+  ami                    = data.aws_ssm_parameter.ubuntu_24_04_ami.value
+  instance_type          = "t2.micro"
   subnet_id              = data.terraform_remote_state.basic.outputs.public_subnet_ids[0]
-  vpc_security_group_ids = [aws_security_group.test_sg.id]
   key_name               = data.terraform_remote_state.basic.outputs.key_pair_name
+  vpc_security_group_ids = [aws_security_group.test_sg.id]
 
-  # 외부 스크립트 참조
-  user_data = file("${path.module}/user_data/prometheus_install.sh")
+  # Ubuntu용 InfluxDB 설치 스크립트
+  user_data = file("${path.module}/user_data/influxdb_install_ubuntu.sh")
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
-    Name        = "prometheus_ec2"
+    Name = "influxdb-${count.index + 1}"
   }
 }
 
-##########################################################
-## EC2 Instance (templatefile_example)
-##########################################################
-
-# resource "aws_instance" "templatefile_example" {
-#   ami                    = "ami-0b5511d5304edfc79"
-#   instance_type          = "t4g.small"
-#   subnet_id              = data.terraform_remote_state.basic.outputs.public_subnet_ids[0]
-#   vpc_security_group_ids = [aws_security_group.test_sg.id]
-#   key_name               = data.terraform_remote_state.basic.outputs.key_pair_name
-
-#   # 외부 스크립트 참조
-#   user_data = templatefile(
-#     "${path.module}/user_data/example.tpl",
-#     {
-#       name        = "Alice"
-#       environment = "staging"
-#     }
-#   )
-
-#   tags = {
-#     Terraform   = "true"
-#     Environment = "dev"
-#     Name        = "templatefile_example"
-#   }
-# }
+# influxdb_ubuntu_24_04__instance_public_ip = [
+#         "3.34.139.206",
+#         "3.36.114.208",
+#     ]
