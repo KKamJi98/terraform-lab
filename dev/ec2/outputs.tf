@@ -21,7 +21,7 @@ output "influxdb_ubuntu_24_04_instance_id" {
   description = "The ID of the EC2 instance"
 }
 
-output "influxdb_ubuntu_24_04__instance_public_ip" {
+output "influxdb_ubuntu_24_04_instance_public_ip" {
   value       = aws_instance.influxdb_ubuntu_24_04[*].public_ip
   description = "The public IP address of the EC2 instance"
 }
