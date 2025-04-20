@@ -12,6 +12,11 @@ output "vpc_arn" {
   value       = aws_vpc.this.arn
 }
 
+output "vpc_cidr_block" {
+  description = "The CIDR block of the VPC"
+  value       = aws_vpc.this.cidr_block
+}
+
 ###############################################################
 # Public Subnets
 ###############################################################
