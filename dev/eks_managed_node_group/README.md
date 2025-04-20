@@ -5,10 +5,19 @@
 - [x] IAM Role for EKS Cluster  
 - [x] EKS Cluster  
 - [x] Access Entry  
-- [x] Create Security Group  
-- [ ] Create Launch Template  
-- [ ] Create EKS Managed Node Group  
-- [ ] KMS Encryption  
+<!-- - [x] Create Security Group   -->
+<!-- - [ ] Create Launch Template   -->
+- [x] Create EKS Managed Node Group  
+- [ ] ETCD Encryption  
+- [ ] EKS Addon  
+  - [ ] CoreDNS
+  - [ ] VPC CNI
+  - [ ] kube-proxy
+  - [ ] Amazon EKS Pod Identity Agent
+  - [ ] AWS Load Balancer Controller
+  - [ ] EBS CSI Driver, ExternalDNS
+  - [ ] ExternalSecrets
+  - [ ] EFS CSI Driver
 
 ## Thinking
 

@@ -8,7 +8,7 @@ resource "aws_eks_access_policy_association" "kkamji_cluster_admin" {
   principal_arn = data.aws_caller_identity.current.arn
 
   access_scope {
-    type       = "cluster"
+    type = "cluster"
   }
 }
 
