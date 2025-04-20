@@ -15,11 +15,11 @@ resource "aws_security_group" "test_sg" {
   }
 
   ingress {
-    description     = "Allow traffic from the same SG"
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    self = true
+    description = "Allow traffic from the same SG"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
   }
 
   egress {

@@ -16,11 +16,11 @@ module "eks" {
 
   # bootstrap_self_managed_addons = false
   cluster_addons = {
-    coredns                = {}
+    coredns = {}
     # eks-pod-identity-agent = {}
-    kube-proxy             = {}
-    vpc-cni                = {}
-    aws-ebs-csi-driver     = {}
+    kube-proxy         = {}
+    vpc-cni            = {}
+    aws-ebs-csi-driver = {}
   }
 
   # Optional
