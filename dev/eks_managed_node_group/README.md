@@ -4,8 +4,8 @@
 
 - [x] IAM Role for EKS Cluster  
 - [x] EKS Cluster  
-- [X] Access Entry  
-- [ ] Create Security Group  
+- [x] Access Entry  
+- [x] Create Security Group  
 - [ ] Create Launch Template  
 - [ ] Create EKS Managed Node Group  
 - [ ] KMS Encryption  

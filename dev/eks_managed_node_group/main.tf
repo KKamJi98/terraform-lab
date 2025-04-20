@@ -17,8 +17,11 @@ resource "aws_eks_cluster" "kkamji_cluster" {
     endpoint_public_access  = true
     public_access_cidrs     = var.public_access_cidrs
     subnet_ids              = data.terraform_remote_state.basic.outputs.public_subnet_ids
-
-    # security_group_ids = #나중에 추가
+    # cluster_security_group_id = aws_security_group.eks_cluster_sg.id  # 지정 불가
+    security_group_ids = [
+      aws_security_group.eks_cluster_sg.id,
+      aws_security_group.eks_node_sg.id
+    ]
   }
 
   kubernetes_network_config {
