@@ -29,6 +29,13 @@ resource "aws_eks_cluster" "kkamji_cluster" {
     service_ipv4_cidr = "172.20.0.0/16"
   }
 
+  encryption_config {
+    provider {
+      key_arn = aws_kms_key.eks_encryption.arn
+    }
+    resources = ["secrets"]
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.kkamji_cluster,
   ]
