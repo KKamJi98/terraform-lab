@@ -10,14 +10,20 @@
 - [x] Create EKS Managed Node Group  
 - [ ] ETCD Encryption  
 - [ ] EKS Addon  
-  - [ ] CoreDNS
-  - [ ] VPC CNI
-  - [ ] kube-proxy
-  - [ ] Amazon EKS Pod Identity Agent
+  - [x] CoreDNS
+  - [x] VPC CNI
+  - [x] kube-proxy
+  - [x] Amazon EKS Pod Identity Agent
+  - [x] EBS CSI Driver
+    - [x] Pod Identity로 SA Role Binding
+    - [x] storageClass 생성
+  - [x] CSI Snapshot Controller
+  - [ ] ExternalDNS
+  - [] Metrics Server
+  <!-- - [ ] EFS CSI Driver -->
+- [ ] ArgoCD로 배포
   - [ ] AWS Load Balancer Controller
-  - [ ] EBS CSI Driver, ExternalDNS
   - [ ] ExternalSecrets
-  - [ ] EFS CSI Driver
 
 ## Thinking
 

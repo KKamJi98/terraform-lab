@@ -1,11 +1,20 @@
+######################################################################
+## EKS Node Group AMD64 AMI 
+######################################################################
 data "aws_ssm_parameter" "eks_al2023_amd64_ami_release_version" {
   name = "/aws/service/eks/optimized-ami/${aws_eks_cluster.kkamji_cluster.version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
 }
 
+######################################################################
+## EKS Node Group ARM64 AMI 
+######################################################################
 data "aws_ssm_parameter" "eks_al2023_arm64_ami_release_version" {
   name = "/aws/service/eks/optimized-ami/${aws_eks_cluster.kkamji_cluster.version}/amazon-linux-2023/arm64/standard/recommended/release_version"
 }
 
+######################################################################
+## EKS Node Group
+######################################################################
 resource "aws_eks_node_group" "eks_managed_node_group" {
   cluster_name    = aws_eks_cluster.kkamji_cluster.name
   node_group_name = "operation"
@@ -33,7 +42,7 @@ resource "aws_eks_node_group" "eks_managed_node_group" {
   }
 
   update_config {
-    max_unavailable_percentage = 50
+    max_unavailable_percentage = 25
   }
 
   remote_access {
