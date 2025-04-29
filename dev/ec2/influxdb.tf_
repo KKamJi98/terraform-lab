@@ -1,0 +1,19 @@
+##########################################################
+## EC2 Instance - InfluxDB (Ubuntu24.04, CentOS7)
+##########################################################
+
+resource "aws_instance" "influxdb_ubuntu_24_04" {
+  count                  = 2
+  ami                    = data.aws_ssm_parameter.ubuntu_24_04_ami.value
+  instance_type          = "t2.micro"
+  subnet_id              = data.terraform_remote_state.basic.outputs.public_subnet_ids[0]
+  key_name               = data.terraform_remote_state.basic.outputs.key_pair_name
+  vpc_security_group_ids = [aws_security_group.test_sg.id]
+
+  # Ubuntu용 InfluxDB 설치 스크립트
+  user_data = file("${path.module}/user_data/influxdb_install_ubuntu.sh")
+
+  tags = {
+    Name = "influxdb-${count.index + 1}"
+  }
+}
