@@ -16,6 +16,6 @@ resource "kubernetes_storage_class" "ebs_gp3" {
   parameters = {
     type = "gp3"
     fsType = "ext4"
-    excrypted = "true"
+    encrypted = "true"
   }
 }

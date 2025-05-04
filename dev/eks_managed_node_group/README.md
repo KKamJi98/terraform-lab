@@ -8,7 +8,7 @@
 <!-- - [x] Create Security Group   -->
 <!-- - [ ] Create Launch Template   -->
 - [x] Create EKS Managed Node Group  
-- [ ] ETCD Encryption  
+- [x] ETCD Encryption  
 - [ ] EKS Addon  
   - [x] CoreDNS
   - [x] VPC CNI
@@ -18,18 +18,21 @@
     - [x] Pod Identity로 SA Role Binding
     - [x] storageClass 생성
   - [x] CSI Snapshot Controller
-  - [ ] ExternalDNS
-  - [] Metrics Server
+  - [x] ExternalDNS
+  - [x] Metrics Server
   <!-- - [ ] EFS CSI Driver -->
+- [x] Max-Pod 확장 (VPC-CNI, Parameters)
+  - [x] Custom Launch Template Node Group 생성 (Nodeadm, cloud-init)
+  - [ ] VPC-CNI `ENABLE_PREFIX_DELEGATION` ON (Kubernetes Provider)
+  - [ ] Remote Access 설정(Security Group)
 - [ ] ArgoCD로 배포
   - [ ] AWS Load Balancer Controller
   - [ ] ExternalSecrets
+  - [ ] Karpenter
 
 ## Thinking
 
-- [ ] 자동으로 생성되는 Cluster Security Group을 사용할까 아니면 새로 생성할까?  
-- [ ] bootstrap_cluster_create_admin_permissions 옵션을 true로 설정해 자동으로 클러스터 접근 권한을 부여할까 아니면 수동으로 부여할까?  
-- [ ] Public Access CIDRs를 설정할까 아니면 설정하지 않을까?  
+- [x] bootstrap_cluster_create_admin_permissions 옵션을 true로 설정해 자동으로 클러스터 접근 권한을 부여할까 아니면 수동으로 부여할까?  -> `false`로 하고 직접 `Access Entry` 추가
 
 ## Access Entry lists
 
