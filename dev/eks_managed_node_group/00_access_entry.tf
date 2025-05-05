@@ -12,6 +12,16 @@ resource "aws_eks_access_policy_association" "kkamji_cluster_admin" {
   }
 }
 
+resource "aws_eks_access_policy_association" "kkamji_admin" {
+  cluster_name  = aws_eks_cluster.kkamji_cluster.name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+  principal_arn = data.aws_caller_identity.current.arn
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
 # EKS 액세스 엔트리 생성
 resource "aws_eks_access_entry" "cluster_admin_access" {
   cluster_name  = aws_eks_cluster.kkamji_cluster.name

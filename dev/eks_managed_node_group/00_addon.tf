@@ -7,9 +7,14 @@
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name = aws_eks_cluster.kkamji_cluster.name
   addon_name   = "vpc-cni"
+  configuration_values = jsonencode({
+    env = {
+      ENABLE_PREFIX_DELEGATION = "true"
+    }
+  })
   # addon_version               = "v1.10.1-eksbuild.1" 
-  # resolve_conflicts_on_create = "OVERWRITE" # 자체 관리형 애드온을 Amazon EKS 애드온으로 마이그레이션할 때 필드 값 충돌을 어떻게 할건지 (OVERWRITE | NONE(default))
-  # resolve_conflicts_on_update = "OVERWRITE" # Addon 기본 값을 변경 했을 때 필드 값 충돌을 어떻게 할건지 (OVERWRITE | PRESERVE | NONE(default))
+  resolve_conflicts_on_create = "OVERWRITE" # 자체 관리형 애드온을 Amazon EKS 애드온으로 마이그레이션할 때 필드 값 충돌을 어떻게 할건지 (OVERWRITE | NONE(default))
+  resolve_conflicts_on_update = "OVERWRITE" # Addon 기본 값을 변경 했을 때 필드 값 충돌을 어떻게 할건지 (OVERWRITE | PRESERVE | NONE(default))
   # pod_identity_association = 
   # service_account_role_arn = 
 }
