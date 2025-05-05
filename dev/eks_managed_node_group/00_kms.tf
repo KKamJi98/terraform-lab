@@ -17,7 +17,7 @@ resource "aws_kms_key" "eks_encryption" {
   description             = "CMK for EKS secrets encryption"
   deletion_window_in_days = 7
   policy                  = local.eks_secrets_policy
-  enable_key_rotation = true
+  enable_key_rotation     = true
 }
 
 resource "aws_kms_alias" "eks_encryption_alias" {

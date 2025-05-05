@@ -41,6 +41,6 @@ resource "aws_iam_role_policy_attachment" "ebs_csi_driver" {
 }
 
 resource "aws_iam_role" "ebs_csi_driver" {
-  name = "eks-managed-ebs-csi-driver-role"
+  name               = "eks-managed-ebs-csi-driver-role"
   assume_role_policy = file("${path.module}/templates/pod_identity_assume_role_policy.json")
 }

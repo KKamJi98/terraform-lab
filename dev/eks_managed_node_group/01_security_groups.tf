@@ -56,6 +56,39 @@
 #   tags = { Name = "eks-node-sg" }
 # }
 
+resource "aws_security_group" "remote_access" {
+  name        = "eks-node-sg"
+  description = "EKS Managed Nodes SG for Remote Access"
+  vpc_id      = data.terraform_remote_state.basic.outputs.vpc_id
+
+  # Node to Node / Pod to Pod (VPC 내부)
+  ingress {
+    description = "Node to Node and Pod to Pod network"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # ingress {
+  #   description = "Node to Node and Pod to Pod network"
+  #   from_port   = 0
+  #   to_port     = 0
+  #   protocol    = "-1"
+  #   self        = true
+  # }
+
+  # egress {
+  #   from_port   = 0
+  #   to_port     = 0
+  #   protocol    = "-1"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
+
+  tags = { Name = "eks-node-remote-access-sg" }
+}
+
+
 # ############################################
 # # 3. Security Group Rules
 # ############################################

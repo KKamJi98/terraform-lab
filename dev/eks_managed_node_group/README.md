@@ -23,8 +23,9 @@
   <!-- - [ ] EFS CSI Driver -->
 - [x] Max-Pod 확장 (VPC-CNI, Parameters)
   - [x] Custom Launch Template Node Group 생성 (Nodeadm, cloud-init)
-  - [ ] VPC-CNI `ENABLE_PREFIX_DELEGATION` ON (Kubernetes Provider)
-  - [ ] Remote Access 설정(Security Group)
+  - [x] VPC-CNI `ENABLE_PREFIX_DELEGATION` ON (Kubernetes Provider)
+  - [x] Remote Access 설정(Security Group)
+  - [x] Security Group(Control Plane, Worker Node들과 통신)
 - [ ] ArgoCD로 배포
   - [ ] AWS Load Balancer Controller
   - [ ] ExternalSecrets
