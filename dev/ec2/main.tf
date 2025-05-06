@@ -40,10 +40,10 @@ resource "aws_security_group" "test_sg" {
 ##########################################################
 locals {
   instance_configs = {
-    amd64 = {
-      ami           = data.aws_ssm_parameter.ubuntu_24_04_ami.value
-      instance_type = "t2.micro"
-    }
+    # amd64 = {
+    #   ami           = data.aws_ssm_parameter.ubuntu_24_04_ami.value
+    #   instance_type = "t2.micro"
+    # }
     arm64 = {
       ami           = data.aws_ssm_parameter.ubuntu_24_04_ami_arm64.value
       instance_type = "t4g.small"
@@ -51,7 +51,7 @@ locals {
   }
 }
 
-resource "aws_instance" "docker_host" {
+resource "aws_instance" "kkamji_host" {
   for_each = local.instance_configs
 
   ami                    = each.value.ami
@@ -61,21 +61,7 @@ resource "aws_instance" "docker_host" {
   key_name               = data.terraform_remote_state.basic.outputs.key_pair_name
 
   # Docker,AWS CLI 설치 스크립트
-  user_data = <<-EOF
-              #!/bin/bash
-              set -eux
-
-              # 패키지 인덱스 갱신 및 Docker 설치
-              apt-get update
-              apt-get install -y docker.io
-
-              # AWS CLI 설치
-              snap install aws-cli --classic
-              
-              # Docker 서비스 활성화
-              systemctl enable docker
-              systemctl start docker
-              EOF
+  user_data = file("${path.module}/user_data/cloud_init_lxd_practice.sh")
 
   tags = {
     Name        = "docker-host-${each.key}"

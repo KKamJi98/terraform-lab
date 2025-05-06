@@ -17,12 +17,12 @@
 ##########################################################
 
 output "docker_host_instance_id" {
-  value       = [for inst in aws_instance.docker_host : inst.id]
+  value       = [for inst in aws_instance.kkamji_host : inst.id]
   description = "The IDs of the EC2 instances"
 }
 
 output "docker_host_instance_public_ip" {
-  value       = [for inst in aws_instance.docker_host : inst.public_ip]
+  value       = [for inst in aws_instance.kkamji_host : inst.public_ip]
   description = "The public IPs of the EC2 instances"
 }
 

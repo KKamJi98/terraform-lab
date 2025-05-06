@@ -30,6 +30,13 @@
   - [ ] AWS Load Balancer Controller
   - [ ] ExternalSecrets
   - [ ] Karpenter
+- [ ] Terraform Code 모듈화
+  - [ ] Cluster
+    - [ ] KMS
+  - [ ] Access Entry
+  - [ ] Pod Identity
+  - [ ] Node Group
+  - [ ] Addon
 
 ## Thinking
 
