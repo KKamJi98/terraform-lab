@@ -42,8 +42,9 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   cluster_name = aws_eks_cluster.kkamji_cluster.name
   addon_name   = "aws-ebs-csi-driver"
   pod_identity_association {
-    role_arn        = aws_iam_role.ebs_csi_driver.arn
+    role_arn        = aws_iam_role.ebs_csi_driver_pod_identity.arn
     service_account = "ebs-csi-controller-sa"
+    # service_account = aws_eks_pod_identity_association.ebs_csi_driver.service_account
   }
 }
 
