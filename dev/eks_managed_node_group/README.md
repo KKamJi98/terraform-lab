@@ -40,9 +40,10 @@
   - [ ] Node Group
   - [ ] Addon
 
-## Thinking
+## Memo
 
 - [x] bootstrap_cluster_create_admin_permissions 옵션을 true로 설정해 자동으로 클러스터 접근 권한을 부여할까 아니면 수동으로 부여할까?  -> `false`로 하고 직접 `Access Entry` 추가
+- [ ] kubernetes 리소스를 삭제하기 전 access entry를 삭제해 `Unauthorized` 문제 발생 건 해결
 
 ## Access Entry lists
 
