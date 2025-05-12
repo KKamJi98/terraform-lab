@@ -18,10 +18,4 @@ resource "kubernetes_storage_class" "ebs_gp3" {
     fsType    = "ext4"
     encrypted = "true"
   }
-
-  depends_on = [
-    aws_eks_access_policy_association.kkamji_cluster_admin,
-    aws_eks_access_policy_association.kkamji_admin,
-    aws_eks_access_entry.cluster_admin_access
-  ]
 }

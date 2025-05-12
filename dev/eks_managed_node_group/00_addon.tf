@@ -74,9 +74,13 @@ resource "aws_eks_addon" "metrics_server" {
 }
 
 ########################################
-# external-dns
+# external-dns (Helm 배포방식으로 변경경)
 ########################################
-resource "aws_eks_addon" "external_dns" {
-  cluster_name = aws_eks_cluster.kkamji_cluster.name
-  addon_name   = "external-dns"
-}
+# resource "aws_eks_addon" "external_dns" {
+#   cluster_name = aws_eks_cluster.kkamji_cluster.name
+#   addon_name   = "external-dns"
+#   pod_identity_association {
+#     role_arn        = aws_iam_role.external_dns_pod_identity.arn
+#     service_account = "external-dns-sa"
+#   }
+# }

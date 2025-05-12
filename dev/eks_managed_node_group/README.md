@@ -18,8 +18,6 @@
     - [x] Pod Identity로 SA Role Binding
     - [x] storageClass 생성
   - [x] CSI Snapshot Controller
-  - [x] ExternalDNS
-    - [ ] Pod Identity #TODO
   - [x] Metrics Server
   <!-- - [ ] EFS CSI Driver -->
 - [x] Max-Pod 확장 (VPC-CNI, Parameters)
@@ -29,8 +27,11 @@
   - [x] Security Group(Control Plane, Worker Node들과 통신)
 - [ ] ArgoCD로 배포
   - [ ] AWS Load Balancer Controller
-    - [ ] SA 생성 Kubernetes Provider
+    - [x] SA 생성 Kubernetes Provider (Helm 배포할 때 생성하도록 변경)
   - [ ] ExternalSecrets
+    - [ ] Pod Identity #TODO
+  - [ ] ExternalDNS
+    - [ ] Pod Identity #TODO
   - [ ] Karpenter
 - [ ] Terraform Code 모듈화
   - [ ] Cluster
