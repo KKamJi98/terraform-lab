@@ -21,6 +21,14 @@ resource "aws_security_group" "test_sg" {
     protocol    = "-1"
     self        = true
   }
+  
+  ingress {
+    description = "Allow port 4321 from specific IP"
+    from_port   = 4321
+    to_port     = 4321
+    protocol    = "tcp"
+    cidr_blocks = ["10.10.10.200/32"]
+  }
 
   egress {
     from_port   = 0
