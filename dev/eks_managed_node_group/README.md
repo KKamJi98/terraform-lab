@@ -26,12 +26,12 @@
   - [x] Remote Access 설정(Security Group)
   - [x] Security Group(Control Plane, Worker Node들과 통신)
 - [ ] ArgoCD로 배포
-  - [ ] AWS Load Balancer Controller
+  - [x] AWS Load Balancer Controller
     - [x] SA 생성 Kubernetes Provider (Helm 배포할 때 생성하도록 변경)
-  - [ ] ExternalSecrets
-    - [ ] Pod Identity #TODO
-  - [ ] ExternalDNS
-    - [ ] Pod Identity #TODO
+  - [x] ExternalSecrets
+    - [x] Pod Identity #TODO
+  - [x] ExternalDNS
+    - [x] Pod Identity #TODO
   - [ ] Karpenter
 - [ ] Terraform Code 모듈화
   - [ ] Cluster
@@ -44,7 +44,7 @@
 ## Memo
 
 - [x] bootstrap_cluster_create_admin_permissions 옵션을 true로 설정해 자동으로 클러스터 접근 권한을 부여할까 아니면 수동으로 부여할까?  -> `false`로 하고 직접 `Access Entry` 추가
-- [ ] kubernetes 리소스를 삭제하기 전 access entry를 삭제해 `Unauthorized` 문제 발생 건 해결
+- [x] kubernetes 리소스를 삭제하기 전 access entry를 삭제해 `Unauthorized` 문제 발생 건 해결 (kubernetes provider를 사용하는 디렉터리 분리)
 
 ## Access Entry lists
 
