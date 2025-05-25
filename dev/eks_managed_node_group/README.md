@@ -9,7 +9,7 @@
 <!-- - [ ] Create Launch Template   -->
 - [x] Create EKS Managed Node Group  
 - [x] ETCD Encryption  
-- [ ] EKS Addon  
+- [x] EKS Addon  
   - [x] CoreDNS
   - [x] VPC CNI
   - [x] kube-proxy
@@ -25,7 +25,7 @@
   - [x] VPC-CNI `ENABLE_PREFIX_DELEGATION` ON (Kubernetes Provider)
   - [x] Remote Access 설정(Security Group)
   - [x] Security Group(Control Plane, Worker Node들과 통신)
-- [ ] ArgoCD로 배포
+- [x] ArgoCD로 배포
   - [x] AWS Load Balancer Controller
     - [x] SA 생성 Kubernetes Provider (Helm 배포할 때 생성하도록 변경)
   - [x] ExternalSecrets
