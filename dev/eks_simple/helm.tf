@@ -10,3 +10,22 @@ resource "helm_release" "external-secrets" {
     kubernetes_service_account.external_secrets_irsa
   ]
 }
+
+resource "helm_release" "metrics_server" {
+  name             = "metrics-server"
+  namespace        = "kube-system"
+  create_namespace = false
+
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart      = "metrics-server"
+  version    = "3.11.0"
+
+  set {
+    name  = "args[0]"
+    value = "--kubelet-insecure-tls"
+  }
+
+  depends_on = [
+    module.eks
+  ]
+}

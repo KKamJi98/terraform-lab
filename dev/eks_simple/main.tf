@@ -11,7 +11,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.33"
 
-  cluster_name    = "kkamji-al2023"
+  cluster_name    = "kkamji-al2023-dev"
   cluster_version = "1.32"
 
   # bootstrap_self_managed_addons = false
