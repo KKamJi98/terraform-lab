@@ -2,7 +2,7 @@
 ## EKS Cluster
 ######################################################################
 resource "aws_eks_cluster" "kkamji_cluster" {
-  name = "kkamji-al2023-prod"
+  name = "kkamji-al2023"
 
   access_config {
     authentication_mode                         = "API_AND_CONFIG_MAP"
