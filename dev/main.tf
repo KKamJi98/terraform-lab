@@ -21,6 +21,10 @@ module "vpc" {
     Terraform   = "true"
     Environment = "dev"
   }
+
+  public_subnet_tags = {
+    "karpenter.sh/discovery" = "kkamji-al2023"
+  }
 }
 
 #######################################

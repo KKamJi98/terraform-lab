@@ -54,6 +54,12 @@ variable "map_public_ip_on_launch" {
   default     = false
 }
 
+variable "public_subnet_tags" {
+  description = "Additional tags to apply to the subnets"
+  type        = map(string)
+  default     = {}
+}
+
 ###############################################################
 # Private Subnets
 ###############################################################
@@ -68,4 +74,10 @@ variable "enable_nat_gateway" {
   description = "Enable NAT gateway"
   type        = bool
   default     = false
+}
+
+variable "private_subnet_tags" {
+  description = "Additional tags to apply to the private subnets"
+  type        = map(string)
+  default     = {}
 }

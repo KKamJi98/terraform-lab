@@ -32,7 +32,6 @@
     - [x] Pod Identity #TODO
   - [x] ExternalDNS
     - [x] Pod Identity #TODO
-  - [ ] Karpenter
 - [ ] Terraform Code 모듈화
   - [ ] Cluster
     - [ ] KMS
