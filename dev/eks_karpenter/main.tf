@@ -51,7 +51,7 @@ module "eks" {
       instance_types = ["t4g.small"]
       capacity_type  = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
 
-      min_size     = 1
+      min_size     = 2
       max_size     = 5
       desired_size = 2
 
@@ -96,12 +96,10 @@ module "eks" {
 module "karpenter" {
   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
-  cluster_name = local.name
-  namespace    = local.namespace
+  cluster_name = module.eks.cluster_name # local 변수 재사용하려 했으나 암묵적 의존관계가 깨져. depends_on을 추가로 설정 해줘야 하는 이슈 발생
 
   node_iam_role_use_name_prefix = false
-  node_iam_role_name            = local.name
-
+  node_iam_role_name            = "kkamji-al2023-KarpenterNodeRole"
 
   # Attach additional IAM policies to the Karpenter node IAM role
   node_iam_role_additional_policies = {
@@ -115,3 +113,5 @@ module "karpenter" {
     Terraform   = "true"
   }
 }
+
+

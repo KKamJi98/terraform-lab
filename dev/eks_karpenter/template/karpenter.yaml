@@ -33,7 +33,7 @@ kind: EC2NodeClass
 metadata:
   name: default
 spec:
-  role: "Karpenter-kkamji-al2023-20250608095820123000000010" # replace with your cluster name
+  role: "kkamji-al2023-KarpenterNodeRole" # replace with your cluster name
   kubelet:
     # podsPerCore: 2
     maxPods: 110
