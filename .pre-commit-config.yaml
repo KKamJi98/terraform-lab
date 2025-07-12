@@ -5,19 +5,20 @@ repos:
     hooks:
       - id: terraform-docs-go
         name: terraform-docs (modules)
-        args: [ "--config", ".terraform-docs.yml", "./modules" ]
+        args: [ "--config", ".terraform-docs.yaml", "./modules" ]
         pass_filenames: false
 
       - id: terraform-docs-go
-        args: [ "--config", ".terraform-docs.yml", "./dev" ]
+        name: terraform-docs (dev)
+        args: [ "--config", ".terraform-docs.yaml", "./dev" ]
         pass_filenames: false
 
       - id: terraform-docs-go
-        name: terraform-docs (envs)
-        args: [ "--config", ".terraform-docs.yml", "./stage" ]
+        name: terraform-docs (stage)
+        args: [ "--config", ".terraform-docs.yaml", "./stage" ]
         pass_filenames: false
 
       - id: terraform-docs-go
-        name: terraform-docs (envs)
-        args: [ "--config", ".terraform-docs.yml", "./prod" ]
+        name: terraform-docs (prod)
+        args: [ "--config", ".terraform-docs.yaml", "./prod" ]
         pass_filenames: false
