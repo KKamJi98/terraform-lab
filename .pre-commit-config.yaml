@@ -1,0 +1,23 @@
+# .pre-commit-config.yaml (레포 루트)
+repos:
+  - repo: https://github.com/terraform-docs/terraform-docs
+    rev: v0.20.0        # 도구 버전 고정
+    hooks:
+      - id: terraform-docs-go
+        name: terraform-docs (modules)
+        args: [ "--config", ".terraform-docs.yml", "./modules" ]
+        pass_filenames: false
+
+      - id: terraform-docs-go
+        args: [ "--config", ".terraform-docs.yml", "./dev" ]
+        pass_filenames: false
+
+      - id: terraform-docs-go
+        name: terraform-docs (envs)
+        args: [ "--config", ".terraform-docs.yml", "./stage" ]
+        pass_filenames: false
+
+      - id: terraform-docs-go
+        name: terraform-docs (envs)
+        args: [ "--config", ".terraform-docs.yml", "./prod" ]
+        pass_filenames: false

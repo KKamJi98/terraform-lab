@@ -1,0 +1,15 @@
+# 레포지토리 루트에 두기
+formatter: markdown table      # 표 형태로 출력
+
+recursive:
+  enabled: true                # 재귀 모드 ON
+  path: "."                    # “현재 실행 경로”의 1-depth 서브모듈 탐색
+  include-main: true           # 실행 경로 자체의 README도 갱신
+
+output:
+  file: README.md              # 각 모듈마다 README.md
+  mode: inject                 # <!-- BEGIN_TF_DOCS --> 블록만 교체
+
+sort:
+  enabled: true
+  by: name
