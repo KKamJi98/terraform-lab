@@ -52,4 +52,41 @@ terraform-docs markdown table --output-file README.md --output-mode inject .
 ```
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 3.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.30 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_eks_east"></a> [eks\_east](#module\_eks\_east) | terraform-aws-modules/eks/aws | ~> 21.0 |
+| <a name="module_eks_west"></a> [eks\_west](#module\_eks\_west) | terraform-aws-modules/eks/aws | ~> 21.0 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [terraform_remote_state.basic](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_region"></a> [region](#input\_region) | AWS region for both clusters | `string` | `"ap-northeast-2"` | no |
+
+## Outputs
+
+No outputs.
 <!-- END_TF_DOCS -->
