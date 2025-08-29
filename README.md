@@ -1,56 +1,116 @@
 # Terraform Study Repository
 
-Terraform 학습 과정에서 실습한 내용을 정리하고 저장하는 공간.
+Terraform 학습·실습 내용을 정리하는 저장소입니다.
 
 ## 레포지토리 구조
 
-```
+```text
 .
-├── README.md          # 프로젝트 설명 문서
-├── dev                # 개발 환경 관련 Terraform 코드
-│   ├── eks_managed_node_group    # EKS 관리형 노드 그룹 실습
-│   ├── eks_self_managed_node_group  # EKS 자체 관리형 노드 그룹 실습
-│   ├── eks_simple     # 간단한 EKS 클러스터 구성 실습
-│   └── helm-test      # Helm 차트 배포 테스트
-├── modules            # 재사용 가능한 Terraform 모듈
-│   ├── ec2            # EC2 인스턴스 생성 모듈
-│   ├── iam-role       # IAM 역할 생성 모듈
-│   ├── security_group # 보안 그룹 생성 모듈
-│   └── vpc            # VPC 네트워크 구성 모듈
-├── prod               # 프로덕션 환경 관련 Terraform 코드 (예정)
-└── stage              # 스테이징 환경 관련 Terraform 코드 (예정)
+├── README.md
+├── .pre-commit-config.yaml      # terraform-docs 자동화 훅 설정
+├── .terraform-docs.yaml         # terraform-docs 전역 설정
+├── dev                          # 개발 환경 예제들
+│   ├── ec2                      # EC2 예제 및 스크립트
+│   ├── auto_scaling_group       # ASG 예제
+│   ├── eks_managed_node_group   # EKS 관리형 노드 그룹
+│   ├── eks_self_managed_node_group # EKS 자체 관리형 노드 그룹
+│   ├── eks_simple               # 간단한 EKS 클러스터 예제
+│   ├── eks_karpenter            # Karpenter 예제
+│   ├── helm                     # Helm 예제
+│   ├── kubernetes               # K8s 리소스 예제
+│   ├── s3                       # S3 예제
+│   ├── acm                      # ACM 예제
+│   ├── import_ec2               # 기존 리소스 import 예제
+│   ├── template                 # 템플릿 예제
+│   └── kcd-2025-lab             # 워크숍/랩 예제
+├── modules                      # 재사용 가능한 모듈 모음
+│   ├── ec2 | iam-role | security_group | vpc
+├── stage                        # 스테이징 환경 코드 (예정/진행)
+└── prod                         # 프로덕션 환경 코드 (예정/진행)
 ```
 
 ## 학습 내용
 
-이 레포지토리에서 다음과 같은 AWS 리소스 관리에 대한 Terraform 실습 진행:
+다음과 같은 AWS 리소스 및 운영 주제에 대한 Terraform 실습을 포함합니다.
 
-- VPC 네트워크 구성
-- EC2 인스턴스 생성 및 관리
-- 보안 그룹 설정
-- IAM 역할 및 정책 관리
-- EKS(Elastic Kubernetes Service) 클러스터 구성
-  - 관리형 노드 그룹
-  - 자체 관리형 노드 그룹
-  - 애드온 설치
-- Helm을 이용한 Kubernetes 애플리케이션 배포
+- VPC 네트워크 구성, 라우팅, NAT/IGW
+- EC2/ASG 배포와 사용자 데이터, 스크립트 관리
+- 보안 그룹, IAM 역할/정책 관리
+- EKS 클러스터 구성(관리형/자체 관리형), 애드온, IRSA
+- Helm을 통한 배포 및 K8s 리소스 관리
+- HCP Terraform과의 연계(plan/apply/destroy)
 
 ## 환경별 구성
 
-- `dev`: 개발 환경 리소스 구성
-- `stage`: 스테이징 환경 리소스 구성 (예정)
-- `prod`: 프로덕션 환경 리소스 구성 (예정)
+- `dev`: 개발/실습용 예제 모음
+- `stage`: 스테이징 환경 코드 (예정/진행)
+- `prod`: 프로덕션 환경 코드 (예정/진행)
 
 ## 모듈 구성
 
-재사용 가능한 모듈을 `modules` 디렉토리에 구성하여 환경별로 필요한 리소스를 효율적으로 생성할 수 있도록 구성.
+공통으로 재사용할 리소스를 `modules` 디렉터리에 모듈 형태로 관리합니다. 각 모듈과 예제 경로의 README는 terraform-docs로 자동 갱신됩니다.
+
+## 개발 도구 및 자동화
+
+- **terraform-docs**: Terraform 코드로부터 Inputs/Outputs/Providers/Resources 문서를 자동 생성합니다.
+- **pre-commit**: 커밋 전에 terraform-docs를 실행해 각 경로의 README를 최신 상태로 유지합니다.
+
+### 설치
+
+- pre-commit
+  - macOS: `brew install pre-commit`
+  - Linux: `pipx install pre-commit` 또는 `pip install --user pre-commit`
+  - Windows: `pipx install pre-commit` 또는 `pip install --user pre-commit`
+- terraform-docs (선택, 수동 실행 시 필요)
+  - macOS: `brew install terraform-docs`
+  - Linux: GitHub Releases에서 바이너리 다운로드 또는 패키지 매니저 사용
+  - Windows: `choco install terraform-docs` 또는 스쿱/수동 설치
+
+권장: Python 툴은 `pipx`로, 시스템 패키지는 각 OS의 패키지 매니저로 설치하세요.
+
+### pre-commit 설정 및 실행
+
+- 최초 1회: `pre-commit install`
+- 전체 훅 수동 실행: `pre-commit run --all-files`
+- 자동 업데이트(버전 갱신): `pre-commit autoupdate`
+
+현재 설정(.pre-commit-config.yaml)은 아래 경로들에서 terraform-docs를 재귀적으로 실행합니다.
+
+- `./modules`
+- `./dev`
+- `./stage`
+- `./prod`
+
+### terraform-docs 수동 실행
+
+pre-commit 대신 필요 시 직접 실행할 수 있습니다.
+
+- 루트(이 파일): `terraform-docs --config .terraform-docs.yaml .`
+- 모듈 전체: `terraform-docs --config .terraform-docs.yaml ./modules`
+- 개발 예제: `terraform-docs --config .terraform-docs.yaml ./dev`
+- 스테이징: `terraform-docs --config .terraform-docs.yaml ./stage`
+- 프로덕션: `terraform-docs --config .terraform-docs.yaml ./prod`
+
+README에 아래 주입 마커가 있어야 자동 갱신됩니다(이미 각 경로의 README에 적용됨).
+
+```markdown
+<!-- BEGIN_TF_DOCS -->
+<!-- END_TF_DOCS -->
+```
 
 ## 운영 방식
 
-HCP Terraform을 통해 terraform plan, apply, destroy 작업 수행 중.
+HCP Terraform을 통해 `terraform plan`, `apply`, `destroy` 작업을 수행합니다. 로컬 실습 시에는 각 예제 경로에서 일반적인 Terraform 워크플로우(`init` → `validate` → `plan` → `apply`)를 사용하세요.
+
+## Terraform Docs 출력(루트)
+
+아래 블록은 terraform-docs로 주입되며, 필요 시 수동 업데이트 가능합니다.
+
+<!-- BEGIN_TF_DOCS -->
+<!-- END_TF_DOCS -->
 
 ## 향후 계획
 
-- 다양한 AWS 서비스에 대한 Terraform 실습 추가
-- 멀티 리전 배포 전략 구현
-- 상태 관리 전략 개선
+- 다양한 AWS 서비스에 대한 Terraform 실습 확대
+- 멀티 리전 배포 전략 및 Best Practice 정리
+- 상태 관리/백엔드 전략 고도화
