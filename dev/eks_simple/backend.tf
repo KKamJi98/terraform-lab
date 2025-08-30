@@ -1,6 +1,6 @@
 terraform {
   cloud {
-    organization = "KKamJi"
+    organization = "kkamji-lab"
 
     workspaces {
       name = "eks_simple"

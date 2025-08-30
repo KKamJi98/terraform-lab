@@ -1,9 +1,9 @@
 terraform {
   cloud {
-    organization = "KKamJi"
+    organization = "kkamji-lab"
 
     workspaces {
-      name = "kcd-2025-lab"
+      name = "kcd_2025_lab"
     }
   }
 }

@@ -5,7 +5,7 @@
 #    hostname = "app.terraform.io"
 #
 #    # HCP Terraform에서 설정한 Organization, Workspace 이름
-#    organization = "KKamJi"
+#    organization = "kkamji-lab"
 #
 #    workspaces {
 #      # Workspace 선택
@@ -16,7 +16,7 @@
 
 terraform {
   cloud {
-    organization = "KKamJi"
+    organization = "kkamji-lab"
 
     workspaces {
       name = "ec2"
