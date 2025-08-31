@@ -17,6 +17,7 @@ module "eks_east" {
     coredns    = {}
     kube-proxy = {}
     vpc-cni = {
+      before_compute = true
       configuration_values = jsonencode({
         env = {
           ENABLE_PREFIX_DELEGATION = "true"
@@ -37,8 +38,8 @@ module "eks_east" {
 
   # 관리형 노드그룹 (Graviton, t4g.small) - 정확히 2대
   eks_managed_node_groups = {
-    default = {
-      name            = "default"
+    east_ng = {
+      name            = "east_ng"
       ami_type        = "AL2023_ARM_64_STANDARD"
       instance_types  = ["t4g.small"]
       capacity_type   = "ON_DEMAND"
@@ -47,9 +48,7 @@ module "eks_east" {
       max_size     = 2
       desired_size = 2
 
-      remote_access = {
-        ec2_ssh_key = data.terraform_remote_state.basic.outputs.key_pair_name
-      }
+      key_name = data.terraform_remote_state.basic.outputs.key_pair_name
 
       enable_bootstrap_user_data = true
       cloudinit_pre_nodeadm = [
@@ -81,6 +80,7 @@ module "eks_west" {
     coredns    = {}
     kube-proxy = {}
     vpc-cni = {
+      before_compute = true
       configuration_values = jsonencode({
         env = {
           ENABLE_PREFIX_DELEGATION = "true"
@@ -101,8 +101,8 @@ module "eks_west" {
 
   # 관리형 노드그룹 (Graviton, t4g.small) - 정확히 2대
   eks_managed_node_groups = {
-    default = {
-      name            = "default"
+    west_ng = {
+      name            = "west_ng"
       ami_type        = "AL2023_ARM_64_STANDARD"
       instance_types  = ["t4g.small"]
       capacity_type   = "ON_DEMAND"
@@ -110,10 +110,9 @@ module "eks_west" {
       min_size     = 2
       max_size     = 2
       desired_size = 2
-
-      remote_access = {
-        ec2_ssh_key = data.terraform_remote_state.basic.outputs.key_pair_name
-      }
+      
+      # Use SSH key via Launch Template to avoid remote_access conflict
+      key_name = data.terraform_remote_state.basic.outputs.key_pair_name
 
       enable_bootstrap_user_data = true
       cloudinit_pre_nodeadm = [

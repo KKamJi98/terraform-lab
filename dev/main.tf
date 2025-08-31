@@ -84,6 +84,9 @@ module "app_security_group" {
 resource "aws_key_pair" "my_key" {
   key_name   = "kkamji_key_2024"
   public_key = var.public_key_string
+  lifecycle {
+    ignore_changes = [public_key]
+  }
 }
 
 #######################################
@@ -105,15 +108,13 @@ resource "aws_iam_user" "external_dns" {
   }
 }
 
-resource "aws_iam_policy_attachment" "external_secrets_secrets_manager_policy" {
-  name       = "external_secrets_policy_attachment"
-  users      = [aws_iam_user.external_secrets.name]
+resource "aws_iam_user_policy_attachment" "external_secrets_secrets_manager_policy" {
+  user       = aws_iam_user.external_secrets.name
   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
 }
 
-resource "aws_iam_policy_attachment" "external_secrets_parameter_store_policy" {
-  name       = "external_secrets_policy_attachment"
-  users      = [aws_iam_user.external_secrets.name]
+resource "aws_iam_user_policy_attachment" "external_secrets_parameter_store_policy" {
+  user       = aws_iam_user.external_secrets.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
 }
 

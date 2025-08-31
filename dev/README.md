@@ -10,7 +10,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.89.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.11.0 |
 
 ## Modules
 
@@ -23,17 +23,17 @@
 
 | Name | Type |
 |------|------|
-| [aws_iam_policy_attachment.external_secrets_parameter_store_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy_attachment) | resource |
-| [aws_iam_policy_attachment.external_secrets_secrets_manager_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy_attachment) | resource |
 | [aws_iam_user.external_dns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user) | resource |
 | [aws_iam_user.external_secrets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user) | resource |
+| [aws_iam_user_policy_attachment.external_secrets_parameter_store_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment) | resource |
+| [aws_iam_user_policy_attachment.external_secrets_secrets_manager_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment) | resource |
 | [aws_key_pair.my_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_public_key_string"></a> [public\_key\_string](#input\_public\_key\_string) | The public key to use for SSH access | `string` | n/a | yes |
+| <a name="input_public_key_string"></a> [public\_key\_string](#input\_public\_key\_string) | The public key to use for SSH access | `string` | `"ssh-rsa FAKE_PUBLIC_KEY_PLACEHOLDER"` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to launch the server in | `string` | `"ap-northeast-2"` | no |
 | <a name="input_server_port"></a> [server\_port](#input\_server\_port) | The port the server will use for HTTP requests | `number` | `8080` | no |
 | <a name="input_user_names"></a> [user\_names](#input\_user\_names) | IAM user name | `list(string)` | <pre>[<br/>  "secrets_manager",<br/>  "external_dns"<br/>]</pre> | no |

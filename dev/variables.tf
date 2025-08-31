@@ -14,6 +14,7 @@ variable "public_key_string" {
   description = "The public key to use for SSH access"
   type        = string
   sensitive   = true
+  default     = "ssh-rsa FAKE_PUBLIC_KEY_PLACEHOLDER"
 }
 
 variable "user_names" {
