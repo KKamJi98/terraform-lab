@@ -20,10 +20,12 @@ resource "helm_release" "metrics_server" {
   chart      = "metrics-server"
   version    = "3.11.0"
 
-  set {
-    name  = "args[0]"
-    value = "--kubelet-insecure-tls"
-  }
+  set = [
+    {
+      name  = "args[0]"
+      value = "--kubelet-insecure-tls"
+    }
+  ]
 
   depends_on = [
     module.eks

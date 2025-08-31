@@ -56,7 +56,7 @@ module "eks" {
       update_config = local.default_update_config
 
       labels = {
-        "node.kubernetes.io/app" = "application"
+        "node.kubernetes.io/app" = "operation2"
       }
     }
 
