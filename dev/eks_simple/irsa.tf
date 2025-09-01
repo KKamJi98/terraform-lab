@@ -1,67 +1,8 @@
 ###############################################################
-data "aws_caller_identity" "current" {}
-
-locals {
-  account_id  = data.aws_caller_identity.current.account_id
-  oidc_issuer = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-}
-# Policy
+# Policy (locals는 locals.tf로 이동)
 ###############################################################
 
-data "aws_iam_policy_document" "external_secrets" {
-  # SSM Parameter Store 접근 정책
-  statement {
-    sid = "SSMParameterStoreAccess"
-    actions = [
-      "ssm:GetParameter",
-      "ssm:GetParameters",
-      "ssm:DescribeParameters"
-    ]
-    resources = [
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/*"
-    ]
-  }
-
-  # Secrets Manager 접근 정책
-  statement {
-    sid = "SecretsManagerReadAccess"
-    actions = [
-      "secretsmanager:GetResourcePolicy",
-      "secretsmanager:GetSecretValue",
-      "secretsmanager:DescribeSecret",
-      "secretsmanager:ListSecretVersionIds"
-    ]
-    resources = [
-      "arn:aws:secretsmanager:${var.region}:${local.account_id}:secret:*"
-    ]
-  }
-
-  statement {
-    sid = "SecretsManagerListAndPolicy"
-    actions = [
-      "secretsmanager:ListSecrets"
-    ]
-    resources = ["*"]
-  }
-}
-
-data "aws_iam_policy_document" "external_secrets_assume" {
-  statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    principals {
-      type        = "Federated"
-      identifiers = [module.eks.oidc_provider_arn]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "${local.oidc_issuer}:sub"
-      values = [
-        "system:serviceaccount:external-secrets:external-secrets-irsa"
-      ]
-    }
-    effect = "Allow"
-  }
-}
+ 
 
 ###############################################################
 # IAM Role
@@ -104,6 +45,10 @@ resource "kubernetes_namespace" "external_secrets" {
   metadata {
     name = "external-secrets"
   }
+  # EKS 클러스터 및 접근 제어가 준비된 뒤 생성되도록 보장
+  depends_on = [
+    module.eks
+  ]
 }
 
 #############################
@@ -119,4 +64,7 @@ resource "kubernetes_service_account" "external_secrets_irsa" {
       "eks.amazonaws.com/role-arn" = aws_iam_role.external_secrets.arn
     }
   }
+  depends_on = [
+    module.eks
+  ]
 }

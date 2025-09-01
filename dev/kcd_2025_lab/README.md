@@ -57,14 +57,20 @@ terraform-docs markdown table --output-file README.md --output-mode inject .
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 3.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 3.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.30 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.30 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
+| <a name="provider_kubernetes.east"></a> [kubernetes.east](#provider\_kubernetes.east) | 2.38.0 |
+| <a name="provider_kubernetes.west"></a> [kubernetes.west](#provider\_kubernetes.west) | 2.38.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Modules
@@ -78,6 +84,8 @@ terraform-docs markdown table --output-file README.md --output-mode inject .
 
 | Name | Type |
 |------|------|
+| [kubernetes_storage_class_v1.gp3_east](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
+| [kubernetes_storage_class_v1.gp3_west](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
 | [terraform_remote_state.basic](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state) | data source |
 
 ## Inputs

@@ -1,9 +1,5 @@
-locals {
-  cluster_names = {
-    east = "kkamji-east"
-    west = "kkamji-west"
-  }
-}
+# 로컬 변수는 locals.tf로 이동
+# Access Entry 관련 로컬 변수는 locals.tf로 이동
 
 module "eks_east" {
   source  = "terraform-aws-modules/eks/aws"
@@ -16,6 +12,9 @@ module "eks_east" {
   addons = {
     coredns    = {}
     kube-proxy = {}
+    eks-pod-identity-agent = {
+      before_compute = true
+    }
     vpc-cni = {
       before_compute = true
       configuration_values = jsonencode({
@@ -24,13 +23,14 @@ module "eks_east" {
         }
       })
     }
+    snapshot-controller = {}
   }
 
   # Optional
   endpoint_public_access = true
 
-  # Optional: Adds the current caller identity as an administrator via cluster access entry
-  enable_cluster_creator_admin_permissions = true
+  # 내장 부트스트랩 비활성화: 별도의 Access Entry로 관리
+  enable_cluster_creator_admin_permissions = false
 
   vpc_id                   = data.terraform_remote_state.basic.outputs.vpc_id
   subnet_ids               = data.terraform_remote_state.basic.outputs.public_subnet_ids
@@ -66,6 +66,9 @@ module "eks_east" {
       ]
     }
   }
+
+  # Access Entry: 현재 Caller 전역 권한 + 외부 주입값 병합
+  access_entries = merge(var.access_entries_east, local.cluster_creator_access_entry)
 }
 
 module "eks_west" {
@@ -79,6 +82,9 @@ module "eks_west" {
   addons = {
     coredns    = {}
     kube-proxy = {}
+    eks-pod-identity-agent = {
+      before_compute = true
+    }
     vpc-cni = {
       before_compute = true
       configuration_values = jsonencode({
@@ -87,13 +93,14 @@ module "eks_west" {
         }
       })
     }
+    snapshot-controller = {}
   }
 
   # Optional
   endpoint_public_access = true
 
-  # Optional: Adds the current caller identity as an administrator via cluster access entry
-  enable_cluster_creator_admin_permissions = true
+  # 내장 부트스트랩 비활성화: 별도의 Access Entry로 관리
+  enable_cluster_creator_admin_permissions = false
 
   vpc_id                   = data.terraform_remote_state.basic.outputs.vpc_id
   subnet_ids               = data.terraform_remote_state.basic.outputs.public_subnet_ids
@@ -130,4 +137,64 @@ module "eks_west" {
       ]
     }
   }
+
+  # Access Entry: 현재 Caller 전역 권한 + 외부 주입값 병합
+  access_entries = merge(var.access_entries_west, local.cluster_creator_access_entry)
+}
+
+# EBS CSI 드라이버용 IRSA (east)
+module "ebs_csi_driver_irsa_east" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
+
+  name = "ebs-csi-east"
+
+  attach_ebs_csi_policy = true
+
+  oidc_providers = {
+    this = {
+      provider_arn               = module.eks_east.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+    }
+  }
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
+# EBS CSI 드라이버용 IRSA (west)
+module "ebs_csi_driver_irsa_west" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
+
+  name = "ebs-csi-west"
+
+  attach_ebs_csi_policy = true
+
+  oidc_providers = {
+    this = {
+      provider_arn               = module.eks_west.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+    }
+  }
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
+# 순환 종속성 방지를 위해 EBS CSI 애드온은 모듈 밖에서 생성
+resource "aws_eks_addon" "ebs_csi_east" {
+  cluster_name             = module.eks_east.cluster_name
+  addon_name               = "aws-ebs-csi-driver"
+  service_account_role_arn = module.ebs_csi_driver_irsa_east.arn
+}
+
+resource "aws_eks_addon" "ebs_csi_west" {
+  cluster_name             = module.eks_west.cluster_name
+  addon_name               = "aws-ebs-csi-driver"
+  service_account_role_arn = module.ebs_csi_driver_irsa_west.arn
 }
