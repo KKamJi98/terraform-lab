@@ -14,7 +14,7 @@
   - [x] VPC CNI
   - [x] kube-proxy
   - [x] Amazon EKS Pod Identity Agent
-  - [x] EBS CSI Driver
+  - [x] EBS CSI Driver (현재 바깥으로 잠깐 빼둠)
     - [x] Pod Identity로 SA Role Binding
     - [x] storageClass 생성
   - [x] CSI Snapshot Controller
