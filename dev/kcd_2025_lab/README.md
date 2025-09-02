@@ -57,18 +57,15 @@ terraform-docs markdown table --output-file README.md --output-mode inject .
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 3.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 3.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.30 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.30 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.11.0 |
 | <a name="provider_kubernetes.east"></a> [kubernetes.east](#provider\_kubernetes.east) | 2.38.0 |
 | <a name="provider_kubernetes.west"></a> [kubernetes.west](#provider\_kubernetes.west) | 2.38.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
@@ -77,6 +74,8 @@ terraform-docs markdown table --output-file README.md --output-mode inject .
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_ebs_csi_driver_irsa_east"></a> [ebs\_csi\_driver\_irsa\_east](#module\_ebs\_csi\_driver\_irsa\_east) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts | ~> 6.0 |
+| <a name="module_ebs_csi_driver_irsa_west"></a> [ebs\_csi\_driver\_irsa\_west](#module\_ebs\_csi\_driver\_irsa\_west) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts | ~> 6.0 |
 | <a name="module_eks_east"></a> [eks\_east](#module\_eks\_east) | terraform-aws-modules/eks/aws | ~> 21.0 |
 | <a name="module_eks_west"></a> [eks\_west](#module\_eks\_west) | terraform-aws-modules/eks/aws | ~> 21.0 |
 
@@ -84,14 +83,21 @@ terraform-docs markdown table --output-file README.md --output-mode inject .
 
 | Name | Type |
 |------|------|
+| [aws_eks_addon.ebs_csi_east](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
+| [aws_eks_addon.ebs_csi_west](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [kubernetes_storage_class_v1.gp3_east](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
 | [kubernetes_storage_class_v1.gp3_west](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_session_context) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [terraform_remote_state.basic](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_access_entries_east"></a> [access\_entries\_east](#input\_access\_entries\_east) | EKS east cluster access entries map | <pre>map(object({<br/>    kubernetes_groups = optional(list(string))<br/>    principal_arn     = string<br/>    type              = optional(string, "STANDARD")<br/>    user_name         = optional(string)<br/>    tags              = optional(map(string), {})<br/>    policy_associations = optional(map(object({<br/>      policy_arn = string<br/>      access_scope = object({<br/>        namespaces = optional(list(string))<br/>        type       = string<br/>      })<br/>    })), {})<br/>  }))</pre> | `{}` | no |
+| <a name="input_access_entries_west"></a> [access\_entries\_west](#input\_access\_entries\_west) | EKS west cluster access entries map | <pre>map(object({<br/>    kubernetes_groups = optional(list(string))<br/>    principal_arn     = string<br/>    type              = optional(string, "STANDARD")<br/>    user_name         = optional(string)<br/>    tags              = optional(map(string), {})<br/>    policy_associations = optional(map(object({<br/>      policy_arn = string<br/>      access_scope = object({<br/>        namespaces = optional(list(string))<br/>        type       = string<br/>      })<br/>    })), {})<br/>  }))</pre> | `{}` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region for both clusters | `string` | `"ap-northeast-2"` | no |
 
 ## Outputs
