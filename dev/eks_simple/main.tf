@@ -1,5 +1,3 @@
- 
-
 ## Provisioning EKS Cluster
 
 module "eks" {
