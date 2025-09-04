@@ -22,7 +22,7 @@ resource "kubernetes_storage_class_v1" "gp3_east" {
   mount_options = ["discard"]
 
   depends_on = [
-    aws_eks_addon.ebs_csi_east
+    module.eks_east
   ]
 }
 
@@ -50,6 +50,6 @@ resource "kubernetes_storage_class_v1" "gp3_west" {
   mount_options = ["discard"]
 
   depends_on = [
-    aws_eks_addon.ebs_csi_west
+    module.eks_west
   ]
 }

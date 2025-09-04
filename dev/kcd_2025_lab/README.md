@@ -36,7 +36,7 @@ kubectl config get-contexts
 - EKS 모듈 `terraform-aws-modules/eks/aws ~> 21.0`
 - Kubernetes `1.33`
 - 노드그룹 `t4g.small` 2개(고정)
-- 애드온 `coredns`, `kube-proxy`, `vpc-cni(프리픽스 위임)`
+- 애드온 `coredns`, `kube-proxy`, `vpc-cni(프리픽스 위임)`, `aws-ebs-csi-driver(Pod Identity)`, `metrics-server`, `external-dns(Pod Identity)`
 - 네트워킹: 원격 상태(`basic`)의 `vpc_id`, `public_subnet_ids`
 
 ## 원격 상태
@@ -74,8 +74,6 @@ terraform-docs markdown table --output-file README.md --output-mode inject .
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_ebs_csi_driver_irsa_east"></a> [ebs\_csi\_driver\_irsa\_east](#module\_ebs\_csi\_driver\_irsa\_east) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts | ~> 6.0 |
-| <a name="module_ebs_csi_driver_irsa_west"></a> [ebs\_csi\_driver\_irsa\_west](#module\_ebs\_csi\_driver\_irsa\_west) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts | ~> 6.0 |
 | <a name="module_eks_east"></a> [eks\_east](#module\_eks\_east) | terraform-aws-modules/eks/aws | ~> 21.0 |
 | <a name="module_eks_west"></a> [eks\_west](#module\_eks\_west) | terraform-aws-modules/eks/aws | ~> 21.0 |
 
@@ -83,13 +81,21 @@ terraform-docs markdown table --output-file README.md --output-mode inject .
 
 | Name | Type |
 |------|------|
-| [aws_eks_addon.ebs_csi_east](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
-| [aws_eks_addon.ebs_csi_west](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
+| [aws_iam_policy.external_dns_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_role.ebs_csi_driver_pod_identity_east](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.ebs_csi_driver_pod_identity_west](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.external_dns_pod_identity_east](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.external_dns_pod_identity_west](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy_attachment.ebs_csi_driver_pod_identity_east](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.ebs_csi_driver_pod_identity_west](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.external_dns_policy_attach_east](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.external_dns_policy_attach_west](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [kubernetes_storage_class_v1.gp3_east](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
 | [kubernetes_storage_class_v1.gp3_west](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_session_context) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+| [aws_partition.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [terraform_remote_state.basic](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state) | data source |
 
 ## Inputs

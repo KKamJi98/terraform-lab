@@ -30,3 +30,40 @@ locals {
   }
 }
 
+locals {
+  # EBS CSI 드라이버 Pod Identity 매핑을 list(object)로 명시
+  ebs_csi_pod_identity_associations_east = [
+    {
+      role_arn        = aws_iam_role.ebs_csi_driver_pod_identity_east.arn
+      service_account = "ebs-csi-controller-sa"
+      namespace       = "kube-system"
+    }
+  ]
+
+  ebs_csi_pod_identity_associations_west = [
+    {
+      role_arn        = aws_iam_role.ebs_csi_driver_pod_identity_west.arn
+      service_account = "ebs-csi-controller-sa"
+      namespace       = "kube-system"
+    }
+  ]
+}
+
+locals {
+  # external-dns Pod Identity 매핑 (east/west)
+  external_dns_pod_identity_associations_east = [
+    {
+      role_arn        = aws_iam_role.external_dns_pod_identity_east.arn
+      service_account = "external-dns"
+      namespace       = "kube-system"
+    }
+  ]
+
+  external_dns_pod_identity_associations_west = [
+    {
+      role_arn        = aws_iam_role.external_dns_pod_identity_west.arn
+      service_account = "external-dns"
+      namespace       = "kube-system"
+    }
+  ]
+}
