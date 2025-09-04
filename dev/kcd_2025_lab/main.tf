@@ -71,6 +71,17 @@ module "eks_east" {
           EOT
         }
       ]
+
+      # metrics-server 포트(10251) 인바운드 허용 (노드 SG self 참조)
+      security_group_ingress_rules = {
+        metrics_server_10251 = {
+          description = "Allow metrics-server on TCP 10251"
+          ip_protocol = "tcp"
+          from_port   = "10251"
+          to_port     = "10251"
+          self        = true
+        }
+      }
     }
   }
 
@@ -149,6 +160,17 @@ module "eks_west" {
           EOT
         }
       ]
+      
+      # metrics-server 포트(10251) 인바운드 허용 (노드 SG self 참조)
+      security_group_ingress_rules = {
+        metrics_server_10251 = {
+          description = "Allow metrics-server on TCP 10251"
+          ip_protocol = "tcp"
+          from_port   = "10251"
+          to_port     = "10251"
+          self        = true
+        }
+      }
     }
   }
 
