@@ -15,6 +15,65 @@ Terraform 워크플로우는 예제별 디렉터리에서 실행하며, 원격 �
 - `terraform apply -auto-approve -var-file dev.tfvars`: 적용 단계, 실습에서는 auto-approve 대신 수동 승인을 권장
 - `pre-commit run --all-files`: README 갱신 및 형식 검증 자동화
 
+## Pre-commit/terraform-docs 운용 규칙
+terraform-docs 훅은 README의 `<!-- BEGIN_TF_DOCS -->` 블록을 자동 갱신합니다. 커밋 시 훅이 수정한 README가 포함되지 않으면 충돌로 커밋이 실패할 수 있습니다. 다음 원칙을 지키세요.
+
+- 항상 깨끗한 워킹 트리에서 커밋합니다. 부분 스테이징 상태에서 커밋을 시도하지 마세요.
+- 코드 변경 후 문서와 함께 한 번에 커밋합니다. README 변경은 동일 커밋에 포함합니다.
+- 커밋 전 아래 순서로 동작하세요.
+
+```bash
+# 1) 포맷/검증
+terraform fmt -recursive
+terraform validate
+
+# 2) 문서 자동 갱신 (모든 경로 일괄)
+pre-commit run --all-files
+
+# 3) 변경 사항 모두 스테이징 (루트 README 포함)
+git add -A
+
+# 4) 커밋 (코드+문서 동시)
+git commit -m "refactor: improve variable and output descriptions"
+```
+
+- `.terraform-docs.yaml`의 `recursive.enabled: true`와 `include-main: true`로 인해 하위 디렉터리 실행 시 루트 `README.md`도 함께 갱신됩니다. 반드시 루트 README까지 함께 스테이징하세요.
+
+### 흔한 실패와 해결
+- 증상: `Stashed changes conflicted with hook auto-fixes... Rolling back fixes...`
+  - 원인: 훅이 수정한 파일(README 등)에 커밋되지 않은 변경이 남아 있어 복원 충돌 발생
+  - 해결 절차:
+
+```bash
+# 워킹 트리 보호
+git stash -u -k   # 인덱스(스테이징)는 유지하고 나머지 변경을 임시 저장
+
+# 문서 싱크 및 스테이징
+pre-commit run --all-files
+git add -A
+
+# 커밋 수행
+git commit -m "docs: sync terraform-docs"
+
+# 남은 작업 되돌리기
+git stash pop
+
+# 필요 시 다시 문서 싱크
+pre-commit run --all-files && git add -A
+```
+
+- 가능한 회피: 커밋 시점에 워킹 트리를 깨끗하게 유지하고, 커밋 전에 `pre-commit run --all-files`를 먼저 수행하면 위 충돌을 대부분 예방할 수 있습니다.
+
+### 금지/예외 사항
+- `SKIP=terraform-docs-go`로 훅을 건너뛰는 것은 비권장입니다. 반드시 같은 브랜치에서 즉시 `docs: sync terraform-docs` 커밋으로 문서를 동기화하세요.
+- README 자동 생성 블록을 수동 편집하지 마세요. 수동 변경은 다음 훅 실행 시 덮어써집니다.
+
+### 커밋 메시지 가이드(요약)
+- 코드와 문서를 함께 변경: 핵심 변경 타입에 맞춰 하나로 커밋합니다.
+  - 예) `refactor: improve variable and output descriptions`
+- 문서만 재생성: `docs: sync terraform-docs`
+- 메시지는 영어, 형태는 `type: summary`를 준수합니다.
+
 ## 코딩 스타일 및 네이밍 규칙
 HCL은 `terraform fmt -recursive` 결과를 기준으로 두 칸 들여쓰기를 유지합니다.
 - 리소스 이름은 `kebab-case`, 변수·출력은 `snake_case`로 작성합니다

@@ -30,13 +30,13 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_create_route53_records"></a> [create\_route53\_records](#input\_create\_route53\_records) | Whether Terraform should manage Route 53 records for DNS validation. | `bool` | `true` | no |
-| <a name="input_domain_name"></a> [domain\_name](#input\_domain\_name) | Primary domain name for the ACM certificate. | `string` | n/a | yes |
+| <a name="input_domain_name"></a> [domain\_name](#input\_domain\_name) | Primary domain name for the ACM certificate. | `string` | `"*.kkamji.net"` | no |
 | <a name="input_hosted_zone_id"></a> [hosted\_zone\_id](#input\_hosted\_zone\_id) | Route 53 hosted zone ID where DNS validation records will be created. | `string` | `null` | no |
-| <a name="input_hosted_zone_name"></a> [hosted\_zone\_name](#input\_hosted\_zone\_name) | Route 53 hosted zone name used when the hosted zone ID is unknown. | `string` | `null` | no |
+| <a name="input_hosted_zone_name"></a> [hosted\_zone\_name](#input\_hosted\_zone\_name) | Route 53 hosted zone name used when the hosted zone ID is unknown. | `string` | `"kkamji.net"` | no |
 | <a name="input_hosted_zone_private_zone"></a> [hosted\_zone\_private\_zone](#input\_hosted\_zone\_private\_zone) | Indicates whether the hosted zone is a private hosted zone. | `bool` | `false` | no |
 | <a name="input_perform_certificate_validation"></a> [perform\_certificate\_validation](#input\_perform\_certificate\_validation) | Whether to run aws\_acm\_certificate\_validation after creating DNS records. | `bool` | `true` | no |
 | <a name="input_region"></a> [region](#input\_region) | Specifies the AWS region where Terraform will operate. | `string` | `"ap-northeast-2"` | no |
-| <a name="input_subject_alternative_names"></a> [subject\_alternative\_names](#input\_subject\_alternative\_names) | Additional Subject Alternative Names to include in the certificate. | `list(string)` | `[]` | no |
+| <a name="input_subject_alternative_names"></a> [subject\_alternative\_names](#input\_subject\_alternative\_names) | Additional Subject Alternative Names to include in the certificate. | `list(string)` | <pre>[<br/>  "kkamji.net"<br/>]</pre> | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags to apply to the ACM certificate. | `map(string)` | `{}` | no |
 | <a name="input_transparency_logging_enabled"></a> [transparency\_logging\_enabled](#input\_transparency\_logging\_enabled) | Controls whether certificate transparency logging is enabled. | `bool` | `true` | no |
 | <a name="input_validation_method"></a> [validation\_method](#input\_validation\_method) | Validation method for the ACM certificate. DNS is recommended. | `string` | `"DNS"` | no |
