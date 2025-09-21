@@ -7,9 +7,9 @@ module "eks" {
   name               = local.cluster_name
   kubernetes_version = "1.33"
 
-  depends_on = [
-    aws_iam_role_policy_attachment.ebs_csi_driver
-  ]
+  # depends_on = [
+  #   aws_iam_role_policy_attachment.ebs_csi_driver
+  # ]
 
   addons = {
     coredns    = {}
@@ -43,10 +43,11 @@ module "eks" {
 
   eks_managed_node_groups = {
     application = {
-      node_group_name = "application"
-      ami_type        = "AL2023_ARM_64_STANDARD"
-      instance_types  = ["t4g.small"]
-      capacity_type   = "ON_DEMAND"
+      create         = true
+      name           = "application"
+      ami_type       = "AL2023_ARM_64_STANDARD"
+      instance_types = ["t4g.small"]
+      capacity_type  = "ON_DEMAND"
 
       min_size     = 2
       max_size     = 3
@@ -82,6 +83,8 @@ module "eks" {
     }
 
     operation = {
+      create         = true
+      name           = "operation"
       ami_type       = "AL2023_ARM_64_STANDARD"
       instance_types = ["t4g.small"]
       capacity_type  = "ON_DEMAND"
