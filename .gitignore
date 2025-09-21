@@ -8,7 +8,8 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
-*.terraform.lock.*
+# Do NOT ignore Terraform lock file; commit it for reproducible builds
+!.terraform.lock.hcl
 # Crash log files
 crash.log
 crash.*.log
@@ -32,6 +33,15 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
+*.tfplan
+*.tfplan.*
+
+# Local caches and tooling artifacts
+.gocache/
+.gomodcache/
+.gotmp/
+.pre-commit-cache/
+.xdg-cache/
 
 # Ignore CLI configuration files
 .terraformrc
