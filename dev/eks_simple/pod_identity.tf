@@ -75,6 +75,71 @@ resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller" {
   policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
 }
 
+###############################################################
+# ExternalDNS (Route53) - IAM Role/Policy and Pod Identity
+###############################################################
+
+resource "aws_iam_policy" "external_dns_policy" {
+  name        = "kkamji-external-dns-policy"
+  description = "Permissions for ExternalDNS to manage Route53 records"
+  policy      = data.aws_iam_policy_document.external_dns.json
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
+resource "aws_iam_role" "external_dns" {
+  name = "kkamji-external-dns-role"
+  assume_role_policy = templatefile("${path.module}/templates/pod_identity_assume_role_policy.tpl", {
+    source_arn = local.pod_identity_source_arn
+  })
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "external_dns_policy_attachment" {
+  role       = aws_iam_role.external_dns.name
+  policy_arn = aws_iam_policy.external_dns_policy.arn
+}
+
+resource "kubernetes_namespace" "external_dns" {
+  metadata {
+    name = "external-dns"
+  }
+
+  depends_on = [
+    module.eks
+  ]
+}
+
+resource "kubernetes_service_account" "external_dns" {
+  metadata {
+    name      = "external-dns"
+    namespace = kubernetes_namespace.external_dns.metadata[0].name
+  }
+
+  depends_on = [
+    module.eks
+  ]
+}
+
+resource "aws_eks_pod_identity_association" "external_dns" {
+  cluster_name    = local.cluster_name
+  namespace       = kubernetes_namespace.external_dns.metadata[0].name
+  service_account = kubernetes_service_account.external_dns.metadata[0].name
+  role_arn        = aws_iam_role.external_dns.arn
+
+  depends_on = [
+    module.eks,
+    aws_iam_role_policy_attachment.external_dns_policy_attachment
+  ]
+}
+
 resource "kubernetes_namespace" "external_secrets" {
   metadata {
     name = "external-secrets"

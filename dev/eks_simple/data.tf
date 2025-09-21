@@ -46,3 +46,27 @@ data "aws_iam_policy_document" "external_secrets" {
 data "aws_vpc" "this" {
   id = data.terraform_remote_state.basic.outputs.vpc_id
 }
+
+# ExternalDNS가 Route53을 갱신하기 위한 최소 권한 정책 문서
+data "aws_iam_policy_document" "external_dns" {
+  statement {
+    sid = "ChangeRecordSets"
+    actions = [
+      "route53:ChangeResourceRecordSets"
+    ]
+    resources = [
+      "arn:aws:route53:::hostedzone/*"
+    ]
+  }
+
+  statement {
+    sid = "ListAndGet"
+    actions = [
+      "route53:ListHostedZones",
+      "route53:ListHostedZonesByName",
+      "route53:ListResourceRecordSets",
+      "route53:GetChange"
+    ]
+    resources = ["*"]
+  }
+}

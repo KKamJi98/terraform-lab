@@ -28,7 +28,8 @@ module "eks" {
     aws-ebs-csi-driver = {
       pod_identity_association = local.ebs_csi_pod_identity_associations
     }
-    metrics-server      = {}
+    # metrics-server      = {}
+    #
     snapshot-controller = {}
   }
 
