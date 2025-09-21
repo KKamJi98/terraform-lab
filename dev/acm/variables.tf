@@ -7,12 +7,13 @@ variable "region" {
 variable "domain_name" {
   description = "Primary domain name for the ACM certificate."
   type        = string
+  default     = "*.kkamji.net"
 }
 
 variable "subject_alternative_names" {
   description = "Additional Subject Alternative Names to include in the certificate."
   type        = list(string)
-  default     = []
+  default     = ["kkamji.net"]
 }
 
 variable "validation_method" {
@@ -51,7 +52,7 @@ variable "hosted_zone_id" {
 variable "hosted_zone_name" {
   description = "Route 53 hosted zone name used when the hosted zone ID is unknown."
   type        = string
-  default     = null
+  default     = "kkamji.net"
 }
 
 variable "hosted_zone_private_zone" {
