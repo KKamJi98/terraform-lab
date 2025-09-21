@@ -52,3 +52,13 @@ locals {
     }
   ]
 }
+
+locals {
+  external_dns_pod_identity_associations = [
+    {
+      role_arn        = aws_iam_role.external_dns.arn
+      service_account = "external-dns"
+      namespace       = "kube-system"
+    }
+  ]
+}

@@ -107,39 +107,6 @@ resource "aws_iam_role_policy_attachment" "external_dns_policy_attachment" {
   policy_arn = aws_iam_policy.external_dns_policy.arn
 }
 
-resource "kubernetes_namespace" "external_dns" {
-  metadata {
-    name = "external-dns"
-  }
-
-  depends_on = [
-    module.eks
-  ]
-}
-
-resource "kubernetes_service_account" "external_dns" {
-  metadata {
-    name      = "external-dns"
-    namespace = kubernetes_namespace.external_dns.metadata[0].name
-  }
-
-  depends_on = [
-    module.eks
-  ]
-}
-
-resource "aws_eks_pod_identity_association" "external_dns" {
-  cluster_name    = local.cluster_name
-  namespace       = kubernetes_namespace.external_dns.metadata[0].name
-  service_account = kubernetes_service_account.external_dns.metadata[0].name
-  role_arn        = aws_iam_role.external_dns.arn
-
-  depends_on = [
-    module.eks,
-    aws_iam_role_policy_attachment.external_dns_policy_attachment
-  ]
-}
-
 resource "kubernetes_namespace" "external_secrets" {
   metadata {
     name = "external-secrets"

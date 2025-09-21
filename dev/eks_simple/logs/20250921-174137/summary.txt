@@ -1,8 +1,0 @@
-=== Terraform Run Summary (20250921-174137) ===
-Destroy: exit=127, duration=0s, log=./logs/20250921-174137/destroy.log, time_detail=./logs/20250921-174137/destroy.time.txt
-Apply  : exit=127, duration=0s, log=./logs/20250921-174137/apply.log, time_detail=./logs/20250921-174137/apply.time.txt
-
-Started (destroy): 2025-09-21 17:41:37
-Ended   (destroy): 2025-09-21 17:41:37
-Started (apply)  : 2025-09-21 17:41:37
-Ended   (apply)  : 2025-09-21 17:41:37

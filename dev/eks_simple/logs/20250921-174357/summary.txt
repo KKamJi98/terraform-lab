@@ -1,4 +1,0 @@
-=== Terraform Run Summary (20250921-174357) ===
-TF_BIN : /home/linuxbrew/.linuxbrew/bin/terraform
-Destroy: exit=0, duration=615s, log=./logs/20250921-174357/destroy.log, time_detail=./logs/20250921-174357/destroy.time.txt
-Apply  : exit=0, duration=829s, log=./logs/20250921-174357/apply.log, time_detail=./logs/20250921-174357/apply.time.txt
