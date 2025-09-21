@@ -21,7 +21,7 @@ resource "aws_security_group" "test_sg" {
     protocol    = "-1"
     self        = true
   }
-  
+
   ingress {
     description = "Allow port 4321 from specific IP"
     from_port   = 4321
