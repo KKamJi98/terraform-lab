@@ -57,6 +57,7 @@ resource "helm_release" "external_secrets" {
     module.eks,
     kubernetes_service_account.external_secrets,
     aws_eks_pod_identity_association.external_secrets,
-    aws_iam_role_policy_attachment.external_secrets_policy_attachment
+    aws_iam_role_policy_attachment.external_secrets_policy_attachment,
+    helm_release.aws_load_balancer_controller
   ]
 }

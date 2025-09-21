@@ -43,7 +43,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     application = {
-      create         = true
+      create         = false
       name           = "application"
       ami_type       = "AL2023_ARM_64_STANDARD"
       instance_types = ["t4g.small"]

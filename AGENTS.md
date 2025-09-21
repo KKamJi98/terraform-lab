@@ -93,6 +93,31 @@ HCL은 `terraform fmt -recursive` 결과를 기준으로 두 칸 들여쓰기를
 - 운영 절차나 규칙이 바뀌면 즉시 `AGENTS.md`를 업데이트하고 같은 커밋에 포함하세요
 - PR 템플릿이 없다면 변경 의도, 주요 경로, 검증 결과(`plan` 출력 요약)를 본문에 기술하고, 필요 시 스크린샷이나 로그를 첨부하세요
 
+## 로컬 캐시 및 아티팩트 관리
+아래 로컬 캐시/툴링 아티팩트는 커밋 대상이 아니며, 이미 루트 `.gitignore`에서 무시됩니다. 필요 시 안전하게 삭제할 수 있고, 도구 실행 시 자동으로 재생성됩니다.
+
+- `.gocache/`
+- `.gomodcache/` (정확 표기: `gomodcache`, `gomodecache` 아님)
+- `.gotmp/`
+- `.pre-commit-cache/`
+- `.xdg-cache/`
+
+정리 명령 예시는 다음을 사용하세요.
+
+```bash
+# 전체 캐시 정리 (레포 루트에서)
+rm -rf .gocache .gomodcache .gotmp .pre-commit-cache .xdg-cache
+
+# Go 캐시만 정리
+go clean -cache -testcache
+go clean -modcache
+
+# pre-commit 캐시 정리
+pre-commit clean
+# 또는
+pre-commit gc
+```
+
 ## 보안 및 상태 관리 팁
 원격 상태와 자격 증명은 별도 워크스페이스에서 관리하여 실수로 커밋되지 않도록 합니다.
 - `backend.tf` 수정 시 상태 이전 절차를 README에 문서화하고, 팀 합의를 거친 뒤 적용합니다
