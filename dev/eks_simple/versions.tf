@@ -1,18 +1,17 @@
 terraform {
-  required_version = ">= 1.11.0"
+  required_version = ">= 1.13.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 6.0.0"
+      version = "~> 6.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.0"
+      version = "~> 2.30"
     }
     helm = {
-      source = "hashicorp/helm"
-      # 최신 메이저(3.x) 사용 허용
-      version = ">= 3.0.0"
+      source  = "hashicorp/helm"
+      version = "~> 3.0"
     }
   }
 }
@@ -24,6 +23,7 @@ provider "aws" {
     tags = {
       Environment = "dev"
       Terraform   = "true"
+      ManagedBy   = "terraform"
     }
   }
 }
@@ -31,15 +31,21 @@ provider "aws" {
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  token                  = data.aws_eks_cluster_auth.this.token
+  exec {
+    api_version = "client.authentication.k8s.io/v1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
 }
 
 provider "helm" {
   kubernetes = {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-    token                  = data.aws_eks_cluster_auth.this.token
-    # Helm이 로컬 kubeconfig를 사용하려 하지 않도록 강제
-    load_config_file       = false
+    exec = {
+      api_version = "client.authentication.k8s.io/v1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+    }
   }
 }

@@ -4,17 +4,18 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 21.0"
 
-  name               = "kkamji-al2023-dev"
-  kubernetes_version = "1.32"
+  name               = local.cluster_name
+  kubernetes_version = "1.33"
 
-  # bootstrap_self_managed_addons = false
+  depends_on = [
+    aws_iam_role_policy_attachment.ebs_csi_driver
+  ]
+
   addons = {
-    coredns = {}
-    # eks-pod-identity-agent = {}
+    coredns    = {}
     kube-proxy = {}
-
-    aws-ebs-csi-driver = {
-      service_account_role_arn = module.ebs_csi_driver_irsa.arn
+    eks-pod-identity-agent = {
+      before_compute = true
     }
     vpc-cni = {
       before_compute = true
@@ -24,40 +25,17 @@ module "eks" {
         }
       })
     }
-    eks-pod-identity-agent = {
-      before_compute = true
+    aws-ebs-csi-driver = {
+      pod_identity_association = local.ebs_csi_pod_identity_associations
     }
+    metrics-server      = {}
     snapshot-controller = {}
   }
 
-  # Optional
-  endpoint_public_access = true
-
-  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  endpoint_public_access                   = true
   enable_cluster_creator_admin_permissions = false
 
-  # EKS Access Entry: 명시적으로 관리자 권한 부여 (bootstrap 비활성화 상태)
-  access_entries = {
-    kkamji_admin = {
-      principal_arn = local.access_principal_arn
-      policy_associations = {
-        # 클러스터 관리자(ClusterAdmin)
-        cluster_admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-        # 일반 관리자(Admin)
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-  }
+  access_entries = merge(var.access_entries, local.cluster_creator_access_entry)
 
   vpc_id                   = data.terraform_remote_state.basic.outputs.vpc_id
   subnet_ids               = data.terraform_remote_state.basic.outputs.public_subnet_ids
@@ -67,15 +45,22 @@ module "eks" {
     application = {
       node_group_name = "application"
       ami_type        = "AL2023_ARM_64_STANDARD"
-      # ami_type       = "AL2_ARM_64"
-      instance_types = ["t4g.small"]
-      capacity_type  = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
+      instance_types  = ["t4g.small"]
+      capacity_type   = "ON_DEMAND"
 
       min_size     = 2
       max_size     = 3
       desired_size = 2
 
       key_name = data.terraform_remote_state.basic.outputs.key_pair_name
+
+      metadata_options = {
+        http_endpoint               = "enabled"
+        http_protocol_ipv6          = "disabled"
+        http_put_response_hop_limit = 2
+        http_tokens                 = "required"
+        instance_metadata_tags      = "disabled"
+      }
 
       update_config = local.default_update_config
       cloudinit_pre_nodeadm = [
@@ -97,17 +82,24 @@ module "eks" {
     }
 
     operation = {
-      # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       ami_type       = "AL2023_ARM_64_STANDARD"
       instance_types = ["t4g.small"]
-      # capacity_type  = "SPOT"
-      capacity_type = "ON_DEMAND" # ON_DEMAND로 해야 Free Tier가 적용됨 SPOT (X)
+      capacity_type  = "ON_DEMAND"
 
       min_size     = 2
       max_size     = 3
       desired_size = 2
 
-      key_name      = data.terraform_remote_state.basic.outputs.key_pair_name
+      key_name = data.terraform_remote_state.basic.outputs.key_pair_name
+
+      metadata_options = {
+        http_endpoint               = "enabled"
+        http_protocol_ipv6          = "disabled"
+        http_put_response_hop_limit = 2
+        http_tokens                 = "required"
+        instance_metadata_tags      = "disabled"
+      }
+
       update_config = local.default_update_config
       cloudinit_pre_nodeadm = [
         {
@@ -128,27 +120,16 @@ module "eks" {
     }
   }
 
-  # 테스트 용에서만 (실제로는 사용하지 않음) - kms 키는 바로 삭제가 안됨
-  encryption_config = {}
-}
-
-module "ebs_csi_driver_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
-  version = "~> 6.0"
-
-  name = "ebs-csi"
-
-  attach_ebs_csi_policy = true
-
-  oidc_providers = {
-    this = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+  node_security_group_additional_rules = {
+    metrics_server_10251 = {
+      description                   = "Allow metrics-server on TCP 10251 from cluster"
+      protocol                      = "tcp"
+      from_port                     = 10251
+      to_port                       = 10251
+      type                          = "ingress"
+      source_cluster_security_group = true
     }
   }
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  encryption_config = {}
 }

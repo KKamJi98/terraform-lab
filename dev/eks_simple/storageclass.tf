@@ -13,8 +13,12 @@ resource "kubernetes_storage_class_v1" "gp3" {
   reclaim_policy         = "Delete"
 
   parameters = {
-    type = "gp3"
+    type      = "gp3"
+    fsType    = "ext4"
+    encrypted = "true"
   }
+
+  mount_options = ["discard"]
 
   # EKS 클러스터 생성 후에 적용되도록 보장
   depends_on = [
