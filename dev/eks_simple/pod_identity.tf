@@ -5,7 +5,8 @@
 resource "aws_iam_role" "ebs_csi_driver" {
   name = "kkamji-ebs-csi-driver-role"
   assume_role_policy = templatefile("${path.module}/templates/pod_identity_assume_role_policy.tpl", {
-    source_arn = local.pod_identity_source_arn
+    source_arn = local.pod_identity_source_arn,
+    account_id = local.account_id
   })
 
   tags = {
@@ -33,7 +34,8 @@ resource "aws_iam_policy" "external_secrets_policy" {
 resource "aws_iam_role" "external_secrets" {
   name = "kkamji_external_secrets"
   assume_role_policy = templatefile("${path.module}/templates/pod_identity_assume_role_policy.tpl", {
-    source_arn = local.pod_identity_source_arn
+    source_arn = local.pod_identity_source_arn,
+    account_id = local.account_id
   })
 
   tags = {
@@ -61,7 +63,8 @@ resource "aws_iam_policy" "aws_load_balancer_controller" {
 resource "aws_iam_role" "aws_load_balancer_controller" {
   name = "kkamji-aws-lbc-role"
   assume_role_policy = templatefile("${path.module}/templates/pod_identity_assume_role_policy.tpl", {
-    source_arn = local.pod_identity_source_arn
+    source_arn = local.pod_identity_source_arn,
+    account_id = local.account_id
   })
 
   tags = {
@@ -93,7 +96,8 @@ resource "aws_iam_policy" "external_dns_policy" {
 resource "aws_iam_role" "external_dns" {
   name = "kkamji-external-dns-role"
   assume_role_policy = templatefile("${path.module}/templates/pod_identity_assume_role_policy.tpl", {
-    source_arn = local.pod_identity_source_arn
+    source_arn = local.pod_identity_source_arn,
+    account_id = local.account_id
   })
 
   tags = {
@@ -106,6 +110,9 @@ resource "aws_iam_role_policy_attachment" "external_dns_policy_attachment" {
   role       = aws_iam_role.external_dns.name
   policy_arn = aws_iam_policy.external_dns_policy.arn
 }
+
+# ExternalDNS pod identity association (actual SA/NS used by running pods)
+// ExternalDNS Pod Identity Association는 EKS Addon 설정에서 관리합니다.
 
 resource "kubernetes_namespace" "external_secrets" {
   metadata {

@@ -10,12 +10,7 @@
       "Action": [
         "sts:AssumeRole",
         "sts:TagSession"
-      ],
-      "Condition": {
-        "StringEquals": {
-          "aws:SourceArn": "${source_arn}"
-        }
-      }
+      ]
     }
   ]
 }
