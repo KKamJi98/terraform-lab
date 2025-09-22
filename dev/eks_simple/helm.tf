@@ -97,7 +97,7 @@ resource "helm_release" "metrics_server" {
   ]
 }
 
-resource "helm_release" "exteranl_dns" {
+resource "helm_release" "external_dns" {
   name      = "external-dns"
   namespace = "external-dns"
 
