@@ -64,6 +64,42 @@ pre-commit run --all-files && git add -A
 
 - 가능한 회피: 커밋 시점에 워킹 트리를 깨끗하게 유지하고, 커밋 전에 `pre-commit run --all-files`를 먼저 수행하면 위 충돌을 대부분 예방할 수 있습니다.
 
+#### 자주 보는 실패 메시지: terraform-docs가 Failed로 중단됨
+
+증상 로그 예시:
+
+```
+[INFO] Stashing unstaged files to /home/USER/.cache/pre-commit/patch...
+terraform-docs (modules).................................................Passed
+terraform-docs (dev).....................................................Failed
+- hook id: terraform-docs-go
+
+terraform-docs (stage)...................................................Passed
+terraform-docs (prod)....................................................Passed
+[INFO] Restored changes from /home/USER/.cache/pre-commit/patch...
+```
+
+- 원인: `terraform-docs` 훅이 README를 자동 수정했지만, 해당 변경이 현재 커밋에 포함되지 않아 훅이 일단 실패(Failed)로 커밋을 중단합니다. 이 레포는 `.terraform-docs.yaml`의 `recursive.enabled: true`, `include-main: true` 설정으로 인해 하위 디렉터리에서 작업해도 여러 README가 함께 수정될 수 있습니다.
+- 빠른 해결: 훅이 수정한 파일까지 모두 스테이징하여 다시 커밋합니다.
+
+```bash
+# 코드 변경과 문서 갱신을 한 번에 포함
+git add -A
+git commit -m "<type>: <summary>"
+
+# 또는 문서만 갱신하는 커밋으로 분리
+git add -A
+git commit -m "docs: sync terraform-docs"
+```
+
+- 권장 절차(예방): 커밋 전에 아래 순서로 먼저 문서를 싱크하면 실패를 대부분 피할 수 있습니다.
+
+```bash
+terraform fmt -recursive && terraform validate
+pre-commit run --all-files
+git add -A && git commit -m "<type>: <summary>"
+```
+
 ### 금지/예외 사항
 - `SKIP=terraform-docs-go`로 훅을 건너뛰는 것은 비권장입니다. 반드시 같은 브랜치에서 즉시 `docs: sync terraform-docs` 커밋으로 문서를 동기화하세요.
 - README 자동 생성 블록을 수동 편집하지 마세요. 수동 변경은 다음 훅 실행 시 덮어써집니다.
