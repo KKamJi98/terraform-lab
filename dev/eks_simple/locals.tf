@@ -58,7 +58,7 @@ locals {
     {
       role_arn        = aws_iam_role.external_dns.arn
       service_account = "external-dns"
-      namespace       = "kube-system"
+      namespace       = "external-dns"
     }
   ]
 }

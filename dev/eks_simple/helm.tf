@@ -39,6 +39,7 @@ resource "helm_release" "external_secrets" {
   repository = "https://charts.external-secrets.io"
   chart      = "external-secrets"
   version    = "0.14.3"
+  atomic     = true
 
   create_namespace = false
 
@@ -62,4 +63,82 @@ resource "helm_release" "external_secrets" {
   ]
 }
 
-// external-dns는 EKS 애드온으로 전환
+resource "helm_release" "metrics_server" {
+  name      = "metrics-server"
+  namespace = "kube-system"
+
+  repository      = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart           = "metrics-server"
+  version         = "3.13.0"
+  atomic          = true
+  cleanup_on_fail = true
+
+  set = [
+    {
+      name  = "apiService.create"
+      value = "true"
+    },
+    {
+      name  = "nodeSelector.node\\.kubernetes\\.io/app"
+      value = "operation"
+    }
+  ]
+
+  set_list = [
+    {
+      name = "defaultArgs"
+      value = [
+        "--cert-dir=/tmp",
+        "--kubelet-insecure-tls",
+        "--metric-resolution=60s",
+        "--kubelet-preferred-address-types=InternalIP"
+      ]
+    }
+  ]
+}
+
+resource "helm_release" "exteranl_dns" {
+  name      = "external-dns"
+  namespace = "external-dns"
+
+  repository       = "https://kubernetes-sigs.github.io/external-dns/"
+  chart            = "external-dns"
+  version          = "1.19.0"
+  create_namespace = true
+  cleanup_on_fail  = true
+
+  set = [
+    # {
+    #   name  = "serviceAccount.name"
+    #   value = "external-dns"
+    # },
+    {
+      name  = "rbac.serviceAccountAnnotations.eks\\.amazonaws.com/role-arn"
+      value = aws_iam_role.external_dns.arn
+    },
+    {
+      name  = "nodeSelector.node\\.kubernetes\\.io/app"
+      value = "operation"
+    },
+    {
+      name  = "extraArgs.exclude-record-types"
+      value = "AAAA"
+    },
+    {
+      name  = "policy"
+      value = "upsert-only"
+    },
+    {
+      name  = "provider.name"
+      value = "aws"
+    },
+    {
+      name  = "env[0].name"
+      value = "AWS_DEFAULT_REGION"
+    },
+    {
+      name  = "env[0].value"
+      value = var.region
+    }
+  ]
+}

@@ -62,9 +62,9 @@ data "aws_iam_policy_document" "external_dns" {
   statement {
     sid = "ListAndGet"
     actions = [
-      "route53:ListHostedZones",
-      "route53:ListHostedZonesByName",
       "route53:ListResourceRecordSets",
+      "route53:ListHostedZonesByName",
+      "route53:ListHostedZones",
       "route53:GetChange"
     ]
     resources = ["*"]

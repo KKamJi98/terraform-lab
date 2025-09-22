@@ -28,12 +28,11 @@ module "eks" {
     aws-ebs-csi-driver = {
       pod_identity_association = local.ebs_csi_pod_identity_associations
     }
-    external-dns = {
-      pod_identity_association = local.external_dns_pod_identity_associations
-    }
-    # metrics-server      = {}
-    #
     snapshot-controller = {}
+    # metrics-server      = {}
+    # external-dns = {
+    #   pod_identity_association = local.external_dns_pod_identity_associations
+    # }
   }
 
   endpoint_public_access                   = true
@@ -82,7 +81,7 @@ module "eks" {
         }
       ]
       labels = {
-        "node.kubernetes.io/app" = "operation2"
+        "node.kubernetes.io/app" = "application"
       }
     }
 
