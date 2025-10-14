@@ -1,5 +1,9 @@
 # Repository Guidelines
 
+<important>
+`/home/kkamji/.codex/AGENTS.md` 를 반드시 참고 할 것
+</important>
+
 ## 프로젝트 구조와 모듈 구성
 Terraform 학습용 예제는 환경별 디렉터리로 구분되며, 각 경로의 README는 terraform-docs로 생성된 입력·출력 정보를 제공합니다. 모든 작업은 해당 환경 디렉터리에서 실행하세요.
 - `dev/`: EC2, EKS, Helm 등 실습 예제를 포함한 기본 작업 영역
@@ -103,31 +107,6 @@ git add -A && git commit -m "<type>: <summary>"
 ### 금지/예외 사항
 - `SKIP=terraform-docs-go`로 훅을 건너뛰는 것은 비권장입니다. 반드시 같은 브랜치에서 즉시 `docs: sync terraform-docs` 커밋으로 문서를 동기화하세요.
 - README 자동 생성 블록을 수동 편집하지 마세요. 수동 변경은 다음 훅 실행 시 덮어써집니다.
-
-### 커밋 메시지 가이드(요약)
-- 코드와 문서를 함께 변경: 핵심 변경 타입에 맞춰 하나로 커밋합니다.
-  - 예) `refactor: improve variable and output descriptions`
-- 문서만 재생성: `docs: sync terraform-docs`
-- 메시지는 영어, 형태는 `type: summary`를 준수합니다.
-
-## 코딩 스타일 및 네이밍 규칙
-HCL은 `terraform fmt -recursive` 결과를 기준으로 두 칸 들여쓰기를 유지합니다.
-- 리소스 이름은 `kebab-case`, 변수·출력은 `snake_case`로 작성합니다
-- 모듈 입력 변수는 `variables.tf`, 출력은 `outputs.tf`에 정리하고, 불필요한 기본값을 피합니다
-- 민감한 값은 `*.auto.tfvars` 대신 수동으로 관리되는 `example.tfvars` 템플릿과 환경 변수(`TF_VAR_`)를 사용하세요
-
-## 테스트 가이드라인
-자동화 테스트는 없으나 정적 검증과 계획 출력 검토가 최소 기준입니다.
-- 변경 분마다 `terraform validate`와 `terraform plan`을 실행해 drift와 권한 오류를 사전에 확인합니다
-- 모듈 수정 시 예제 디렉터리에서 최소 한 번 `plan`을 돌려 종속성 이상을 확인합니다
-- 공급자나 모듈 버전을 갱신했다면 `terraform init -upgrade` 결과를 검토하고, 잠금 파일을 커밋합니다
-
-## 커밋 및 PR 가이드라인
-작업 단위를 작게 유지하고 코드·문서 동기화를 보장하세요.
-- 커밋 메시지는 `feat:`, `fix:` 등 지정된 타입 뒤에 간결한 영어 요약을 작성합니다
-- README나 출력이 변경되면 동일 커밋에 포함해 리뷰어가 diff를 한 번에 확인하도록 합니다
-- 운영 절차나 규칙이 바뀌면 즉시 `AGENTS.md`를 업데이트하고 같은 커밋에 포함하세요
-- PR 템플릿이 없다면 변경 의도, 주요 경로, 검증 결과(`plan` 출력 요약)를 본문에 기술하고, 필요 시 스크린샷이나 로그를 첨부하세요
 
 ## 로컬 캐시 및 아티팩트 관리
 아래 로컬 캐시/툴링 아티팩트는 커밋 대상이 아니며, 이미 루트 `.gitignore`에서 무시됩니다. 필요 시 안전하게 삭제할 수 있고, 도구 실행 시 자동으로 재생성됩니다.
