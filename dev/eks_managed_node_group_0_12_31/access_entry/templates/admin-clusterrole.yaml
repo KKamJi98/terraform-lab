@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-admin
+  labels:
+    app.kubernetes.io/name: platform-admin
+    rbac.example.com/team: platform-admins
+rules:
+- apiGroups:
+  - "*"
+  resources:
+  - "*"
+  verbs:
+  - "*"
+- apiGroups:
+  - ""
+  resources:
+  - nodes/proxy
+  - pods/portforward
+  verbs:
+  - "*"

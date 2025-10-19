@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-sa
+  namespace: default
+  labels:
+    app.kubernetes.io/name: test-sa
+    app.kubernetes.io/managed-by: terraform-lab
+secrets: []
