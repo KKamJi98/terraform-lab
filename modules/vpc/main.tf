@@ -1,7 +1,6 @@
 ###############################################################
 # VPC
 ###############################################################
-
 resource "aws_vpc" "this" {
   cidr_block           = var.cidr_block
   enable_dns_support   = var.enable_dns_support
@@ -17,7 +16,6 @@ resource "aws_vpc" "this" {
 ###############################################################
 # Public Subnets
 ###############################################################
-
 resource "aws_subnet" "public" {
   count = length(var.public_subnet_cidr_blocks)
 
@@ -59,7 +57,6 @@ resource "aws_route_table_association" "public" {
 ###############################################################
 # Private Subnets
 ###############################################################
-
 resource "aws_subnet" "private" {
   count = length(var.private_subnet_cidr_blocks)
 
@@ -98,7 +95,6 @@ resource "aws_nat_gateway" "private" {
 ###############################################################
 # Internet Gateway
 ###############################################################
-
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
 

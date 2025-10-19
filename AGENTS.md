@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 <important>
-`/home/kkamji/.codex/AGENTS.md` 를 반드시 참고 할 것
+`/home/kkamji/.codex/AGENTS.md`의 내용을 반드시 확인하고 따를 것
 </important>
 
 ## 프로젝트 구조와 모듈 구성
