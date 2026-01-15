@@ -21,9 +21,9 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Environment = "dev"
-      Terraform   = "true"
-      ManagedBy   = "terraform"
+      environment = "dev"
+      terraform   = "true"
+      managed_by  = "terraform"
     }
   }
 }
