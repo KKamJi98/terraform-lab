@@ -3,8 +3,8 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Environment = "dev"
-      Terraform   = "true"
+      environment = "dev"
+      terraform   = "true"
     }
   }
 }
