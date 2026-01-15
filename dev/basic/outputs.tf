@@ -3,26 +3,6 @@ output "key_pair_name" {
   description = "The name of the key pair used to launch the server"
 }
 
-output "vpc_id" {
-  value       = data.terraform_remote_state.vpc.outputs.vpc_id
-  description = "The ID of the VPC"
-}
-
-output "vpc_cidr_block" {
-  value       = data.terraform_remote_state.vpc.outputs.vpc_cidr_block
-  description = "The CIDR block of the VPC"
-}
-
-output "public_subnet_ids" {
-  value       = data.terraform_remote_state.vpc.outputs.public_subnet_ids
-  description = "The IDs of the public subnets"
-}
-
-output "private_subnet_ids" {
-  value       = data.terraform_remote_state.vpc.outputs.private_subnet_ids
-  description = "The IDs of the private subnets"
-}
-
 output "external_secrets_user_arn" {
   description = "The ARN of the external secrets user"
   # value = aws_iam_user.this[*].arn
