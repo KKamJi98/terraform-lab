@@ -2,7 +2,7 @@
 # Security Groups
 #######################################
 
-module "app_security_group" {
+module "kkamji_security_group" {
   source      = "../../modules/security_group"
   name        = "kkamji-test-sg"
   description = "kkamji-test-sg"

@@ -14,8 +14,8 @@ output "external_dns_user_arn" {
   value       = aws_iam_user.external_dns.arn
 }
 
-output "app_security_group_id" {
-  value       = module.app_security_group.aws_security_group_id
+output "kkamji_security_group_id" {
+  value       = module.kkamji_security_group.aws_security_group_id
   description = "The ID of the application security group"
 }
 
