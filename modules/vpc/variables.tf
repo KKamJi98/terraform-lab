@@ -6,6 +6,11 @@ variable "cidr_block" {
   description = "The CIDR block for the VPC"
   type        = string
   default     = "10.0.0.0/16"
+
+  validation {
+    condition     = can(cidrhost(var.cidr_block, 0))
+    error_message = "cidr_block must be a valid CIDR notation (e.g., 10.0.0.0/16)."
+  }
 }
 
 variable "enable_dns_support" {
@@ -36,6 +41,11 @@ variable "availability_zones" {
   description = "List of availability zones to deploy subnets in"
   type        = list(string)
   default     = ["ap-northeast-2a", "ap-northeast-2c", "ap-northeast-2d"]
+
+  validation {
+    condition     = length(var.availability_zones) > 0
+    error_message = "At least one availability zone must be specified."
+  }
 }
 
 ###############################################################
@@ -43,9 +53,14 @@ variable "availability_zones" {
 ###############################################################
 
 variable "public_subnet_cidr_blocks" {
-  description = "List of CIDR blocks for the subnets"
+  description = "List of CIDR blocks for the public subnets"
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+
+  validation {
+    condition     = alltrue([for cidr in var.public_subnet_cidr_blocks : can(cidrhost(cidr, 0))])
+    error_message = "All public_subnet_cidr_blocks must be valid CIDR notations."
+  }
 }
 
 variable "map_public_ip_on_launch" {
@@ -65,9 +80,14 @@ variable "public_subnet_tags" {
 ###############################################################
 
 variable "private_subnet_cidr_blocks" {
-  description = "List of CIDR blocks for the subnets"
+  description = "List of CIDR blocks for the private subnets"
   type        = list(string)
   default     = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+
+  validation {
+    condition     = alltrue([for cidr in var.private_subnet_cidr_blocks : can(cidrhost(cidr, 0))])
+    error_message = "All private_subnet_cidr_blocks must be valid CIDR notations."
+  }
 }
 
 variable "enable_nat_gateway" {

@@ -36,9 +36,10 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
-  tags = {
-    Name = "${var.name}-pub"
-  }
+  tags = merge(
+    { Name = "${var.name}-pub" },
+    var.tags
+  )
 }
 
 resource "aws_route" "public" {
@@ -77,19 +78,59 @@ resource "aws_eip" "this" {
   count = var.enable_nat_gateway ? 1 : 0
 
   domain = "vpc"
+
+  tags = merge(
+    { Name = "${var.name}-nat-eip" },
+    var.tags
+  )
 }
 
-resource "aws_nat_gateway" "private" {
+resource "aws_nat_gateway" "this" {
   count = var.enable_nat_gateway ? 1 : 0
 
-  allocation_id = aws_eip.this[count.index].id
-  subnet_id     = aws_subnet.public[1].id
+  allocation_id = aws_eip.this[0].id
+  subnet_id     = aws_subnet.public[0].id
 
-  tags = {
-    Name = "${var.name}-nat-gateway"
-  }
+  tags = merge(
+    { Name = "${var.name}-nat-gw" },
+    var.tags
+  )
 
   depends_on = [aws_internet_gateway.this]
+
+  lifecycle {
+    precondition {
+      condition     = length(var.public_subnet_cidr_blocks) > 0
+      error_message = "At least one public subnet is required when enable_nat_gateway is true."
+    }
+  }
+}
+
+###############################################################
+# Private Route Table
+###############################################################
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.this.id
+
+  tags = merge(
+    { Name = "${var.name}-pri" },
+    var.tags
+  )
+}
+
+resource "aws_route" "private_nat" {
+  count = var.enable_nat_gateway ? 1 : 0
+
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.this[0].id
+}
+
+resource "aws_route_table_association" "private" {
+  count = length(var.private_subnet_cidr_blocks)
+
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private.id
 }
 
 ###############################################################
@@ -99,9 +140,7 @@ resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
 
   tags = merge(
-    {
-      Name = var.name
-    },
+    { Name = var.name },
     var.tags
   )
 }

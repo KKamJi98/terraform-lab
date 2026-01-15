@@ -36,6 +36,39 @@ output "private_subnet_ids" {
 }
 
 ###############################################################
+# Route Tables
+###############################################################
+
+output "public_route_table_id" {
+  description = "The ID of the public route table"
+  value       = aws_route_table.public.id
+}
+
+output "private_route_table_id" {
+  description = "The ID of the private route table"
+  value       = aws_route_table.private.id
+}
+
+###############################################################
+# NAT Gateway
+###############################################################
+
+output "nat_gateway_id" {
+  description = "The ID of the NAT Gateway"
+  value       = var.enable_nat_gateway ? aws_nat_gateway.this[0].id : null
+}
+
+output "nat_gateway_public_ip" {
+  description = "The public IP address of the NAT Gateway"
+  value       = var.enable_nat_gateway ? aws_eip.this[0].public_ip : null
+}
+
+output "nat_eip_id" {
+  description = "The allocation ID of the Elastic IP for NAT Gateway"
+  value       = var.enable_nat_gateway ? aws_eip.this[0].id : null
+}
+
+###############################################################
 # Internet Gateway
 ###############################################################
 
