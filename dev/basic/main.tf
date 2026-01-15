@@ -42,10 +42,7 @@ module "kkamji_security_group" {
     }
   ]
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 #######################################
@@ -65,18 +62,12 @@ resource "aws_key_pair" "my_key" {
 #######################################
 resource "aws_iam_user" "external_secrets" {
   name = "external-secrets"
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_user" "external_dns" {
   name = "external_dns"
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_user_policy_attachment" "external_secrets_secrets_manager_policy" {

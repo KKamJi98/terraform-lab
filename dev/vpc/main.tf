@@ -17,10 +17,7 @@ module "vpc" {
   private_subnet_cidr_blocks = ["10.0.101.0/24", "10.0.102.0/24"]
   enable_nat_gateway         = false
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 
   public_subnet_tags = {
     "karpenter.sh/discovery" = "kkamji-al2023"

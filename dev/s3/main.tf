@@ -7,9 +7,7 @@ resource "aws_s3_bucket" "terraform_state" {
   }
 
   tags = {
-    Name        = "kkamji-terraform-state"
-    Terraform   = "true"
-    Environment = "Dev"
+    Name = "kkamji-terraform-state"
   }
 }
 

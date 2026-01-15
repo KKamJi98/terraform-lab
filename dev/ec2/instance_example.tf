@@ -11,9 +11,7 @@ resource "aws_instance" "basic_ec2" {
   key_name               = data.terraform_remote_state.basic.outputs.key_pair_name
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
-    Name        = "basic_ec2"
+    Name = "basic_ec2"
   }
 
   depends_on = [aws_security_group.test_sg]
@@ -41,8 +39,6 @@ resource "aws_instance" "templatefile_example" {
   )
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
-    Name        = "templatefile_example"
+    Name = "templatefile_example"
   }
 }

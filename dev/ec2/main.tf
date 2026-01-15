@@ -37,10 +37,7 @@ resource "aws_security_group" "test_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 ##########################################################
@@ -72,8 +69,7 @@ resource "aws_instance" "kkamji_host" {
   user_data = file("${path.module}/user_data/cloud_init_lxd_practice.sh")
 
   tags = {
-    Name        = "docker-host-${each.key}"
-    Environment = "dev"
+    Name = "docker-host-${each.key}"
   }
 }
 

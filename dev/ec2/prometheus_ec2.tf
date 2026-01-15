@@ -14,8 +14,6 @@ resource "aws_instance" "prometheus_ec2" {
   user_data = file("${path.module}/user_data/prometheus_install.sh")
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
-    Name        = "prometheus_ec2"
+    Name = "prometheus_ec2"
   }
 }
