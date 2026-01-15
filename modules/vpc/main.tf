@@ -26,7 +26,7 @@ resource "aws_subnet" "public" {
 
   tags = merge(
     {
-      Name = "${var.name}-public-${substr(var.availability_zones[count.index], length(var.availability_zones[count.index]) - 1, 1)}"
+      Name = "${var.name}-pub-${substr(var.availability_zones[count.index], length(var.availability_zones[count.index]) - 1, 1)}"
     },
     var.tags,
     var.public_subnet_tags
@@ -37,7 +37,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
   tags = {
-    Name = "${var.name}-public"
+    Name = "${var.name}-pub"
   }
 }
 
@@ -66,10 +66,10 @@ resource "aws_subnet" "private" {
 
   tags = merge(
     {
-      Name = "${var.name}-public-${substr(var.availability_zones[count.index], length(var.availability_zones[count.index]) - 1, 1)}"
+      Name = "${var.name}-pri-${substr(var.availability_zones[count.index], length(var.availability_zones[count.index]) - 1, 1)}"
     },
     var.tags,
-    var.public_subnet_tags
+    var.private_subnet_tags
   )
 }
 
