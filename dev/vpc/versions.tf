@@ -1,5 +1,13 @@
 provider "aws" {
   region = var.region
+
+  default_tags {
+    tags = {
+      terraform   = "true"
+      environment = "dev"
+      creator     = "kkamji"
+    }
+  }
 }
 
 terraform {
