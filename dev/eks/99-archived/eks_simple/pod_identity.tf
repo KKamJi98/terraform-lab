@@ -9,10 +9,7 @@ resource "aws_iam_role" "ebs_csi_driver" {
     account_id = local.account_id
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_role_policy_attachment" "ebs_csi_driver" {
@@ -25,10 +22,7 @@ resource "aws_iam_policy" "external_secrets_policy" {
   description = "Policy for External Secrets to access SSM Parameter Store and Secrets Manager"
   policy      = data.aws_iam_policy_document.external_secrets.json
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_role" "external_secrets" {
@@ -38,10 +32,7 @@ resource "aws_iam_role" "external_secrets" {
     account_id = local.account_id
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_role_policy_attachment" "external_secrets_policy_attachment" {
@@ -54,10 +45,7 @@ resource "aws_iam_policy" "aws_load_balancer_controller" {
   description = "Permissions for AWS Load Balancer Controller"
   policy      = file("${path.module}/templates/aws_load_balancer_policy.json")
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_role" "aws_load_balancer_controller" {
@@ -67,10 +55,7 @@ resource "aws_iam_role" "aws_load_balancer_controller" {
     account_id = local.account_id
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller" {
@@ -87,10 +72,7 @@ resource "aws_iam_policy" "external_dns_policy" {
   description = "Permissions for ExternalDNS to manage Route53 records"
   policy      = data.aws_iam_policy_document.external_dns.json
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_role" "external_dns" {
@@ -100,10 +82,7 @@ resource "aws_iam_role" "external_dns" {
     account_id = local.account_id
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  tags = {}
 }
 
 resource "aws_iam_role_policy_attachment" "external_dns_policy_attachment" {

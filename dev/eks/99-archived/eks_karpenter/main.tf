@@ -108,10 +108,7 @@ module "karpenter" {
 
   create_pod_identity_association = true
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = {}
 }
 
 
