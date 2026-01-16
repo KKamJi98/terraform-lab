@@ -20,6 +20,6 @@ module "vpc" {
   tags = {}
 
   public_subnet_tags = {
-    "karpenter.sh/discovery" = "kkamji-al2023"
+    "karpenter.sh/discovery" = "kkamji-eks-34"
   }
 }
