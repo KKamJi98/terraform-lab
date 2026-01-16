@@ -42,7 +42,18 @@ module "eks" {
       instance_type = "t4g.small"
       desired_size  = 1
       min_size      = 1
-      max_size      = 1
+      max_size      = 3
+      disk_size     = 30
+      max_pods      = 110
+      labels        = {}
+    }
+    arm64-eks-optimized = {
+      ami_type      = "AL2023_ARM_64_STANDARD"
+      ami_id        = null
+      instance_type = "t4g.small"
+      desired_size  = 1
+      min_size      = 1
+      max_size      = 3
       disk_size     = 30
       max_pods      = 110
       labels        = {}
