@@ -50,23 +50,7 @@ variable "public_access_cidrs" {
 variable "enable_cluster_creator_admin_permissions" {
   description = "Grant cluster creator admin permissions"
   type        = bool
-  default     = true
-}
-
-variable "enable_cluster_admin_access_entry" {
-  description = "Create EKS access entries for the current caller"
-  type        = bool
-  default     = true
-}
-
-#######################################################################
-# Managed Node Group
-#######################################################################
-
-variable "node_group_name" {
-  description = "Managed node group name"
-  type        = string
-  default     = "default"
+  default     = false
 }
 
 variable "node_role_name" {
@@ -75,47 +59,30 @@ variable "node_role_name" {
   default     = null
 }
 
-variable "node_instance_type" {
-  description = "Instance type for managed node group"
-  type        = string
-  default     = "t4g.small"
-}
+#######################################################################
+# Managed Node Groups
+#######################################################################
 
-variable "node_ami_id" {
-  description = "Custom AMI ID for managed node group"
-  type        = string
-  default     = "ami-02dae848385169479"
-}
+variable "node_groups" {
+  description = "Managed node groups configuration"
+  type = map(object({
+    ami_type      = string
+    ami_id        = string
+    instance_type = string
+    desired_size  = number
+    min_size      = number
+    max_size      = number
+    disk_size     = number
+    max_pods      = number
+    labels        = map(string)
+  }))
 
-variable "node_desired_size" {
-  description = "Desired size for managed node group"
-  type        = number
-  default     = 3
-}
-
-variable "node_min_size" {
-  description = "Minimum size for managed node group"
-  type        = number
-  default     = 1
-}
-
-variable "node_max_size" {
-  description = "Maximum size for managed node group"
-  type        = number
-  default     = 3
-}
-
-variable "node_max_pods" {
-  description = "Maximum pods per node"
-  type        = number
-  default     = 110
-}
-
-variable "node_labels" {
-  description = "Labels for managed node group"
-  type        = map(string)
-  default = {
-    node_group = "system"
+  validation {
+    condition = alltrue([
+      for _, ng in var.node_groups :
+      ng.ami_type != "CUSTOM" || coalesce(ng.ami_id, "") != ""
+    ])
+    error_message = "node_groups: ami_type이 \"CUSTOM\"인 경우 ami_id는 필수입니다."
   }
 }
 
@@ -123,6 +90,41 @@ variable "ssh_key_name" {
   description = "SSH key name for nodes"
   type        = string
   default     = null
+}
+
+#######################################################################
+# Access Entries
+#######################################################################
+
+variable "allow_empty_access_entries" {
+  description = "Allow empty access_entries even when cluster creator admin permissions are disabled"
+  type        = bool
+  default     = false
+}
+
+variable "access_entries" {
+  description = "EKS Access Entries to grant IAM principals cluster access"
+  type = map(object({
+    kubernetes_groups = optional(list(string))
+    principal_arn     = string
+    type              = optional(string, "STANDARD")
+    user_name         = optional(string)
+    tags              = optional(map(string), {})
+    policy_associations = optional(map(object({
+      policy_arn = string
+      access_scope = object({
+        namespaces = optional(list(string))
+        type       = string
+      })
+    })), {})
+  }))
+  default  = {}
+  nullable = false
+
+  validation {
+    condition     = var.enable_cluster_creator_admin_permissions || var.allow_empty_access_entries || length(var.access_entries) > 0
+    error_message = "access_entries must not be empty when enable_cluster_creator_admin_permissions is false. Set allow_empty_access_entries=true to bypass."
+  }
 }
 
 #######################################################################

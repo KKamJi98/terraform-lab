@@ -1,10 +1,4 @@
 #######################################################################
-# Data
-#######################################################################
-
-data "aws_caller_identity" "current" {}
-
-#######################################################################
 # Local
 #######################################################################
 
@@ -14,17 +8,39 @@ locals {
 
   node_role_name = coalesce(var.node_role_name, "${var.cluster_name}-node-role")
 
-  node_user_data = base64encode(templatefile(
-    "${path.module}/templates/nodeconfig.tpl",
-    {
-      cluster_name     = aws_eks_cluster.this.name
-      cluster_endpoint = aws_eks_cluster.this.endpoint
-      cluster_ca       = aws_eks_cluster.this.certificate_authority[0].data
-      cluster_cidr     = local.cluster_cidr
-      cluster_dns      = local.cluster_dns
-      max_pods         = var.node_max_pods
-    }
-  ))
+  custom_ami_node_groups = {
+    for name, ng in var.node_groups : name => ng
+    if ng.ami_type == "CUSTOM"
+  }
+
+  node_group_user_data = {
+    for name, ng in local.custom_ami_node_groups :
+    name => base64encode(templatefile(
+      "${path.module}/templates/nodeconfig.tpl",
+      {
+        cluster_name     = aws_eks_cluster.this.name
+        cluster_endpoint = aws_eks_cluster.this.endpoint
+        cluster_ca       = aws_eks_cluster.this.certificate_authority[0].data
+        cluster_cidr     = local.cluster_cidr
+        cluster_dns      = local.cluster_dns
+        max_pods         = ng.max_pods
+      }
+    ))
+  }
+
+  access_policy_associations = merge(
+    {},
+    [
+      for entry_key, entry in var.access_entries : {
+        for assoc_key, assoc in try(entry.policy_associations, {}) :
+        "${entry_key}:${assoc_key}" => {
+          entry_key    = entry_key
+          policy_arn   = assoc.policy_arn
+          access_scope = assoc.access_scope
+        }
+      }
+    ]...
+  )
 }
 
 #######################################################################
@@ -91,6 +107,11 @@ resource "aws_iam_role_policy_attachment" "node_group_ecr" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role_policy_attachment" "node_group_ssm" {
+  role       = aws_iam_role.node_group.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 #######################################################################
 # EKS Cluster
 #######################################################################
@@ -102,7 +123,7 @@ resource "aws_eks_cluster" "this" {
 
   access_config {
     authentication_mode                         = "API_AND_CONFIG_MAP"
-    bootstrap_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
+    bootstrap_cluster_creator_admin_permissions = false
   }
 
   vpc_config {
@@ -231,12 +252,21 @@ resource "aws_ec2_tag" "cluster_sg_karpenter_discovery" {
 #######################################################################
 
 resource "aws_launch_template" "node_group" {
-  name_prefix   = "${var.cluster_name}-ng-"
-  image_id      = var.node_ami_id
-  instance_type = var.node_instance_type
+  for_each = local.custom_ami_node_groups
+
+  name_prefix   = "${var.cluster_name}-${each.key}-ng-"
+  image_id      = each.value.ami_id
+  instance_type = each.value.instance_type
   key_name      = var.ssh_key_name
 
-  user_data = local.node_user_data
+  user_data = local.node_group_user_data[each.key]
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = each.value.disk_size
+    }
+  }
 
   metadata_options {
     http_endpoint = "enabled"
@@ -250,7 +280,12 @@ resource "aws_launch_template" "node_group" {
 
   tag_specifications {
     resource_type = "instance"
-    tags          = var.tags
+    tags = merge(
+      var.tags,
+      {
+        Name = "${var.cluster_name}-${each.key}"
+      }
+    )
   }
 }
 
@@ -259,32 +294,43 @@ resource "aws_launch_template" "node_group" {
 #######################################################################
 
 resource "aws_eks_node_group" "managed" {
+  for_each = var.node_groups
+
   cluster_name    = aws_eks_cluster.this.name
-  node_group_name = var.node_group_name
+  node_group_name = each.key
   node_role_arn   = aws_iam_role.node_group.arn
   subnet_ids      = var.subnet_ids
 
-  ami_type       = "CUSTOM"
-  instance_types = [var.node_instance_type]
+  ami_type       = each.value.ami_type
+  instance_types = each.value.ami_type == "CUSTOM" ? null : [each.value.instance_type]
 
-  labels = var.node_labels
+  labels    = each.value.labels
+  disk_size = each.value.ami_type == "CUSTOM" ? null : each.value.disk_size
 
-  launch_template {
-    id      = aws_launch_template.node_group.id
-    version = "$Latest"
+  dynamic "launch_template" {
+    for_each = each.value.ami_type == "CUSTOM" ? [1] : []
+    content {
+      id      = aws_launch_template.node_group[each.key].id
+      version = "$Latest"
+    }
   }
 
   scaling_config {
-    desired_size = var.node_desired_size
-    max_size     = var.node_max_size
-    min_size     = var.node_min_size
+    desired_size = each.value.desired_size
+    max_size     = each.value.max_size
+    min_size     = each.value.min_size
   }
 
   update_config {
     max_unavailable_percentage = 100
   }
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.cluster_name}-${each.key}"
+    }
+  )
 
   depends_on = [
     aws_eks_addon.vpc_cni,
@@ -298,38 +344,26 @@ resource "aws_eks_node_group" "managed" {
 # EKS Access Entries
 #######################################################################
 
-resource "aws_eks_access_entry" "cluster_admin" {
-  count = var.enable_cluster_admin_access_entry ? 1 : 0
+resource "aws_eks_access_entry" "this" {
+  for_each = var.access_entries
 
-  cluster_name  = aws_eks_cluster.this.name
-  principal_arn = data.aws_caller_identity.current.arn
-  type          = "STANDARD"
+  cluster_name      = aws_eks_cluster.this.name
+  principal_arn     = each.value.principal_arn
+  type              = try(each.value.type, "STANDARD")
+  user_name         = try(each.value.user_name, null)
+  kubernetes_groups = try(each.value.kubernetes_groups, null)
+  tags              = merge(var.tags, try(each.value.tags, {}))
 }
 
-resource "aws_eks_access_policy_association" "cluster_admin" {
-  count = var.enable_cluster_admin_access_entry ? 1 : 0
+resource "aws_eks_access_policy_association" "this" {
+  for_each = local.access_policy_associations
 
   cluster_name  = aws_eks_cluster.this.name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  principal_arn = data.aws_caller_identity.current.arn
+  policy_arn    = each.value.policy_arn
+  principal_arn = aws_eks_access_entry.this[each.value.entry_key].principal_arn
 
   access_scope {
-    type = "cluster"
+    type       = each.value.access_scope.type
+    namespaces = try(each.value.access_scope.namespaces, null)
   }
-
-  depends_on = [aws_eks_access_entry.cluster_admin]
-}
-
-resource "aws_eks_access_policy_association" "admin" {
-  count = var.enable_cluster_admin_access_entry ? 1 : 0
-
-  cluster_name  = aws_eks_cluster.this.name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
-  principal_arn = data.aws_caller_identity.current.arn
-
-  access_scope {
-    type = "cluster"
-  }
-
-  depends_on = [aws_eks_access_entry.cluster_admin]
 }

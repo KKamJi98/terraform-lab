@@ -13,18 +13,51 @@ module "eks" {
 
   service_ipv4_cidr = "172.20.0.0/16"
 
-  node_group_name    = "system"
-  node_ami_id        = "ami-02dae848385169479"
-  node_instance_type = "t4g.small"
+  enable_cluster_creator_admin_permissions = false
 
-  node_desired_size = 3
-  node_min_size     = 1
-  node_max_size     = 3
+  access_entries = {
+    cluster-admin = {
+      principal_arn = data.aws_caller_identity.current.arn
+      policy_associations = {
+        cluster-admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
 
-  node_max_pods = 110
-  node_labels = {
-    node_group                = "system"
-    "karpenter.sh/controller" = "true"
+  node_groups = {
+    arm64-custom-ami = {
+      ami_type      = "CUSTOM"
+      ami_id        = "ami-07dfd5a6419303aec"
+      instance_type = "t4g.small"
+      desired_size  = 1
+      min_size      = 1
+      max_size      = 1
+      disk_size     = 30
+      max_pods      = 110
+      labels        = {}
+    }
+    # arm64-bottlerocket = {
+    #   ami_type      = "BOTTLEROCKET_ARM_64"
+    #   ami_id        = null
+    #   instance_type = "t4g.small"
+    #   desired_size  = 1
+    #   min_size      = 1
+    #   max_size      = 1
+    #   disk_size     = 30
+    #   max_pods      = 110
+    #   labels        = {}
+    # }
   }
 
   enable_prefix_delegation = true
