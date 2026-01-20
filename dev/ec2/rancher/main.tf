@@ -1,4 +1,38 @@
 ##########################################################
+## IAM Role for SSM Access
+##########################################################
+resource "aws_iam_role" "rancher_ssm" {
+  name = "rancher-ssm-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name = "rancher-ssm-role"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "rancher_ssm" {
+  role       = aws_iam_role.rancher_ssm.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "rancher" {
+  name = "rancher-instance-profile"
+  role = aws_iam_role.rancher_ssm.name
+}
+
+##########################################################
 ## Rancher Security Group
 ##########################################################
 resource "aws_security_group" "rancher_sg" {
@@ -7,19 +41,11 @@ resource "aws_security_group" "rancher_sg" {
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
   ingress {
-    description = "SSH from my IP"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.my_ip
-  }
-
-  ingress {
     description = "HTTP"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = var.my_ip
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -27,7 +53,7 @@ resource "aws_security_group" "rancher_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = var.my_ip
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -50,7 +76,7 @@ resource "aws_instance" "rancher" {
   instance_type          = "t4g.small"
   subnet_id              = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.rancher_sg.id]
-  key_name               = data.terraform_remote_state.basic.outputs.key_pair_name
+  iam_instance_profile   = aws_iam_instance_profile.rancher.name
 
   user_data = file("${path.module}/user_data/rancher_docker.sh")
 
