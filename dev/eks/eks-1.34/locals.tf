@@ -1,9 +1,9 @@
 locals {
-  cluster_name = "kkamji-eks-34"
+  cluster_name = var.cluster_name
 
   tags = {
     creator = "kkamji"
-    env     = "dev"
+    env     = var.environment
     cluster = local.cluster_name
   }
 }

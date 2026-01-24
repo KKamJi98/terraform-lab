@@ -3,9 +3,9 @@ data "terraform_remote_state" "vpc" {
 
   config = {
     hostname     = "app.terraform.io"
-    organization = "kkamji-lab"
+    organization = var.vpc_state_organization
     workspaces = {
-      name = "dev-vpc"
+      name = var.vpc_state_workspace
     }
   }
 }

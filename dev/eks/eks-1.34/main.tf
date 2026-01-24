@@ -13,7 +13,9 @@ module "eks" {
 
   service_ipv4_cidr = "172.20.0.0/16"
 
-  enable_cluster_creator_admin_permissions = false
+  enable_cluster_creator_admin_permissions     = false
+  enable_oidc_provider                         = false
+  node_group_update_max_unavailable_percentage = 100
 
   access_entries = {
     cluster-admin = {
