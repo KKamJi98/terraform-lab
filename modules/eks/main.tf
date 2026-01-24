@@ -149,28 +149,48 @@ resource "aws_eks_cluster" "this" {
 # EKS Addons
 #######################################################################
 
-resource "aws_eks_addon" "vpc_cni" {
-  cluster_name = aws_eks_cluster.this.name
-  addon_name   = "vpc-cni"
-
-  configuration_values = jsonencode({
-    env = {
-      ENABLE_PREFIX_DELEGATION = var.enable_prefix_delegation ? "true" : "false"
+locals {
+  addon_defaults = {
+    "vpc-cni" = {
+      configuration_values = jsonencode({
+        env = {
+          ENABLE_PREFIX_DELEGATION = var.enable_prefix_delegation ? "true" : "false"
+        }
+      })
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE"
     }
-  })
+  }
 
-  resolve_conflicts_on_create = "OVERWRITE"
-  resolve_conflicts_on_update = "OVERWRITE"
+  addons = merge(
+    local.addon_defaults,
+    {
+      for name, addon in var.addons :
+      name => merge(lookup(local.addon_defaults, name, {}), addon)
+    }
+  )
 }
 
-resource "aws_eks_addon" "kube_proxy" {
-  cluster_name = aws_eks_cluster.this.name
-  addon_name   = "kube-proxy"
-}
+resource "aws_eks_addon" "this" {
+  for_each = local.addons
 
-resource "aws_eks_addon" "coredns" {
   cluster_name = aws_eks_cluster.this.name
-  addon_name   = "coredns"
+  addon_name   = each.key
+
+  addon_version               = try(each.value.addon_version, null)
+  configuration_values        = try(each.value.configuration_values, null)
+  preserve                    = try(each.value.preserve, null)
+  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, null)
+  resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, null)
+  tags                        = merge(var.tags, try(each.value.tags, {}))
+
+  dynamic "pod_identity_association" {
+    for_each = try(each.value.pod_identity_association, [])
+    content {
+      role_arn        = pod_identity_association.value.role_arn
+      service_account = try(pod_identity_association.value.service_account, null)
+    }
+  }
 }
 
 #######################################################################
@@ -333,7 +353,7 @@ resource "aws_eks_node_group" "managed" {
   )
 
   depends_on = [
-    aws_eks_addon.vpc_cni,
+    aws_eks_addon.this["vpc-cni"],
     aws_iam_role_policy_attachment.node_group_worker,
     aws_iam_role_policy_attachment.node_group_cni,
     aws_iam_role_policy_attachment.node_group_ecr,

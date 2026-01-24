@@ -53,7 +53,7 @@ module "eks" {
       instance_type = "t4g.small"
       desired_size  = 2
       min_size      = 1
-      max_size      = 1
+      max_size      = 3
       disk_size     = 30
       max_pods      = 110
       labels        = {}
@@ -61,6 +61,21 @@ module "eks" {
   }
 
   enable_prefix_delegation = true
+
+  addons = {
+    "vpc-cni"    = {}
+    "kube-proxy" = {}
+    "coredns"    = {}
+    "aws-ebs-csi-driver" = {
+      pod_identity_association = [
+        {
+          role_arn        = aws_iam_role.ebs_csi_driver.arn
+          service_account = "ebs-csi-controller-sa"
+        }
+      ]
+    }
+    "eks-pod-identity-agent" = {}
+  }
 
   tags = local.tags
 }

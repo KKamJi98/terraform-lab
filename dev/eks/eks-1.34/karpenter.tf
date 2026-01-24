@@ -1,7 +1,6 @@
 locals {
   karpenter_namespace       = "kube-system"
   karpenter_service_account = "karpenter"
-  karpenter_oidc_issuer     = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
 
   karpenter_node_role_name       = "KarpenterNodeRole-${local.cluster_name}"
   karpenter_controller_role_name = "KarpenterControllerRole-${local.cluster_name}"
@@ -175,23 +174,11 @@ resource "aws_iam_policy" "karpenter_controller" {
 data "aws_iam_policy_document" "karpenter_controller_assume" {
   statement {
     effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
+    actions = ["sts:AssumeRole", "sts:TagSession"]
 
     principals {
-      type        = "Federated"
-      identifiers = [module.eks.oidc_provider_arn]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${local.karpenter_oidc_issuer}:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${local.karpenter_oidc_issuer}:sub"
-      values   = ["system:serviceaccount:${local.karpenter_namespace}:${local.karpenter_service_account}"]
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
     }
   }
 }
@@ -206,4 +193,13 @@ resource "aws_iam_role" "karpenter_controller" {
 resource "aws_iam_role_policy_attachment" "karpenter_controller" {
   role       = aws_iam_role.karpenter_controller.name
   policy_arn = aws_iam_policy.karpenter_controller.arn
+}
+
+resource "aws_eks_pod_identity_association" "karpenter_controller" {
+  cluster_name    = module.eks.cluster_name
+  namespace       = local.karpenter_namespace
+  service_account = local.karpenter_service_account
+  role_arn        = aws_iam_role.karpenter_controller.arn
+
+  depends_on = [module.eks]
 }

@@ -131,6 +131,24 @@ variable "access_entries" {
 # Addons / Network
 #######################################################################
 
+variable "addons" {
+  description = "EKS addons configuration"
+  type = map(object({
+    addon_version               = optional(string)
+    configuration_values        = optional(string)
+    preserve                    = optional(bool)
+    resolve_conflicts_on_create = optional(string)
+    resolve_conflicts_on_update = optional(string)
+    pod_identity_association = optional(list(object({
+      role_arn        = string
+      service_account = string
+    })), [])
+    tags = optional(map(string), {})
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "enable_prefix_delegation" {
   description = "Enable VPC CNI prefix delegation"
   type        = bool
