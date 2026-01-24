@@ -188,7 +188,7 @@ resource "aws_eks_addon" "this" {
     for_each = try(each.value.pod_identity_association, [])
     content {
       role_arn        = pod_identity_association.value.role_arn
-      service_account = try(pod_identity_association.value.service_account, null)
+      service_account = pod_identity_association.value.service_account
     }
   }
 }

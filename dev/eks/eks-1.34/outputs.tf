@@ -13,6 +13,11 @@ output "cluster_oidc_issuer_url" {
   description = "EKS OIDC issuer URL"
 }
 
+output "karpenter_controller_role_name" {
+  value       = aws_iam_role.karpenter_controller.name
+  description = "Karpenter controller IAM role name"
+}
+
 output "karpenter_controller_role_arn" {
   value       = aws_iam_role.karpenter_controller.arn
   description = "Karpenter controller IAM role ARN"
@@ -31,4 +36,14 @@ output "karpenter_interruption_queue_name" {
 output "karpenter_interruption_queue_arn" {
   value       = aws_sqs_queue.karpenter_interruption.arn
   description = "Karpenter interruption SQS queue ARN"
+}
+
+output "aws_load_balancer_controller_role_name" {
+  value       = aws_iam_role.aws_load_balancer_controller.name
+  description = "AWS Load Balancer Controller IAM role name"
+}
+
+output "aws_load_balancer_controller_role_arn" {
+  value       = aws_iam_role.aws_load_balancer_controller.arn
+  description = "AWS Load Balancer Controller IAM role name"
 }

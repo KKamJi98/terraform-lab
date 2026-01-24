@@ -159,7 +159,7 @@ resource "aws_cloudwatch_event_target" "karpenter_instance_state_change" {
 
 resource "aws_iam_policy" "karpenter_controller" {
   name = local.karpenter_controller_policy
-  policy = templatefile("${path.module}/templates/karpenter_controller_policy.json.tftpl", {
+  policy = templatefile("${path.module}/templates/karpenter-controller-policy.json.tftpl", {
     partition              = data.aws_partition.current.partition
     region                 = data.aws_region.current.region
     account_id             = data.aws_caller_identity.current.account_id
