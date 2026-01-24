@@ -53,6 +53,12 @@ variable "enable_cluster_creator_admin_permissions" {
   default     = false
 }
 
+variable "enable_oidc_provider" {
+  description = "Create IAM OIDC provider for IRSA"
+  type        = bool
+  default     = true
+}
+
 variable "node_role_name" {
   description = "IAM role name for managed node group"
   type        = string
@@ -90,6 +96,17 @@ variable "ssh_key_name" {
   description = "SSH key name for nodes"
   type        = string
   default     = null
+}
+
+variable "node_group_update_max_unavailable_percentage" {
+  description = "Max unavailable percentage during managed node group updates"
+  type        = number
+  default     = 100
+
+  validation {
+    condition     = var.node_group_update_max_unavailable_percentage >= 0 && var.node_group_update_max_unavailable_percentage <= 100
+    error_message = "node_group_update_max_unavailable_percentage must be between 0 and 100."
+  }
 }
 
 #######################################################################

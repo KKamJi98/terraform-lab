@@ -7,8 +7,8 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.28.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.1.0 |
 
 ## Modules
 
@@ -46,14 +46,16 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | EKS Access Entries to grant IAM principals cluster access | <pre>map(object({<br/>    kubernetes_groups = optional(list(string))<br/>    principal_arn     = string<br/>    type              = optional(string, "STANDARD")<br/>    user_name         = optional(string)<br/>    tags              = optional(map(string), {})<br/>    policy_associations = optional(map(object({<br/>      policy_arn = string<br/>      access_scope = object({<br/>        namespaces = optional(list(string))<br/>        type       = string<br/>      })<br/>    })), {})<br/>  }))</pre> | `{}` | no |
-| <a name="input_addons"></a> [addons](#input\_addons) | EKS addons configuration | <pre>map(object({<br/>    addon_version               = optional(string)<br/>    configuration_values        = optional(string)<br/>    preserve                    = optional(bool)<br/>    resolve_conflicts_on_create = optional(string)<br/>    resolve_conflicts_on_update = optional(string)<br/>    pod_identity_association = optional(list(object({<br/>      role_arn        = string<br/>      service_account = optional(string)<br/>    })), [])<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
+| <a name="input_addons"></a> [addons](#input\_addons) | EKS addons configuration | <pre>map(object({<br/>    addon_version               = optional(string)<br/>    configuration_values        = optional(string)<br/>    preserve                    = optional(bool)<br/>    resolve_conflicts_on_create = optional(string)<br/>    resolve_conflicts_on_update = optional(string)<br/>    pod_identity_association = optional(list(object({<br/>      role_arn        = string<br/>      service_account = string<br/>    })), [])<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
 | <a name="input_allow_empty_access_entries"></a> [allow\_empty\_access\_entries](#input\_allow\_empty\_access\_entries) | Allow empty access\_entries even when cluster creator admin permissions are disabled | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | EKS cluster name | `string` | n/a | yes |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | EKS cluster version | `string` | `"1.34"` | no |
 | <a name="input_enable_cluster_creator_admin_permissions"></a> [enable\_cluster\_creator\_admin\_permissions](#input\_enable\_cluster\_creator\_admin\_permissions) | Grant cluster creator admin permissions | `bool` | `false` | no |
+| <a name="input_enable_oidc_provider"></a> [enable\_oidc\_provider](#input\_enable\_oidc\_provider) | Create IAM OIDC provider for IRSA | `bool` | `true` | no |
 | <a name="input_enable_prefix_delegation"></a> [enable\_prefix\_delegation](#input\_enable\_prefix\_delegation) | Enable VPC CNI prefix delegation | `bool` | `true` | no |
 | <a name="input_endpoint_private_access"></a> [endpoint\_private\_access](#input\_endpoint\_private\_access) | Enable private access to the EKS API endpoint | `bool` | `true` | no |
 | <a name="input_endpoint_public_access"></a> [endpoint\_public\_access](#input\_endpoint\_public\_access) | Enable public access to the EKS API endpoint | `bool` | `true` | no |
+| <a name="input_node_group_update_max_unavailable_percentage"></a> [node\_group\_update\_max\_unavailable\_percentage](#input\_node\_group\_update\_max\_unavailable\_percentage) | Max unavailable percentage during managed node group updates | `number` | `100` | no |
 | <a name="input_node_groups"></a> [node\_groups](#input\_node\_groups) | Managed node groups configuration | <pre>map(object({<br/>    ami_type      = string<br/>    ami_id        = string<br/>    instance_type = string<br/>    desired_size  = number<br/>    min_size      = number<br/>    max_size      = number<br/>    disk_size     = number<br/>    max_pods      = number<br/>    labels        = map(string)<br/>  }))</pre> | n/a | yes |
 | <a name="input_node_role_name"></a> [node\_role\_name](#input\_node\_role\_name) | IAM role name for managed node group | `string` | `null` | no |
 | <a name="input_public_access_cidrs"></a> [public\_access\_cidrs](#input\_public\_access\_cidrs) | CIDR blocks that can access the public EKS API endpoint | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
@@ -74,5 +76,5 @@ No modules.
 | <a name="output_cluster_security_group_id"></a> [cluster\_security\_group\_id](#output\_cluster\_security\_group\_id) | Cluster security group ID |
 | <a name="output_node_role_arn"></a> [node\_role\_arn](#output\_node\_role\_arn) | Managed node group IAM role ARN |
 | <a name="output_node_security_group_id"></a> [node\_security\_group\_id](#output\_node\_security\_group\_id) | Node security group ID |
-| <a name="output_oidc_provider_arn"></a> [oidc\_provider\_arn](#output\_oidc\_provider\_arn) | OIDC provider ARN |
+| <a name="output_oidc_provider_arn"></a> [oidc\_provider\_arn](#output\_oidc\_provider\_arn) | OIDC provider ARN (null if disabled) |
 <!-- END_TF_DOCS -->

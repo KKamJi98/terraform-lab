@@ -19,8 +19,8 @@ output "cluster_oidc_issuer_url" {
 }
 
 output "oidc_provider_arn" {
-  value       = aws_iam_openid_connect_provider.this.arn
-  description = "OIDC provider ARN"
+  value       = try(aws_iam_openid_connect_provider.this[0].arn, null)
+  description = "OIDC provider ARN (null if disabled)"
 }
 
 output "cluster_security_group_id" {
