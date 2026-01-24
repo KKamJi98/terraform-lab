@@ -8,10 +8,13 @@ resource "aws_eks_node_group" "managed" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = each.key
   node_role_arn   = aws_iam_role.node_group.arn
-  subnet_ids      = var.subnet_ids
+  subnet_ids      = try(each.value.subnet_ids, var.subnet_ids)
 
-  ami_type       = each.value.ami_type
-  instance_types = each.value.ami_type == "CUSTOM" ? null : [each.value.instance_type]
+  ami_type      = each.value.ami_type
+  capacity_type = try(each.value.capacity_type, null)
+  instance_types = each.value.ami_type == "CUSTOM" ? null : (
+    length(coalesce(each.value.instance_types, [])) > 0 ? each.value.instance_types : [each.value.instance_type]
+  )
 
   labels    = each.value.labels
   disk_size = each.value.ami_type == "CUSTOM" ? null : each.value.disk_size
@@ -36,10 +39,29 @@ resource "aws_eks_node_group" "managed" {
 
   tags = merge(
     var.tags,
+    try(each.value.tags, {}),
     {
       Name = "${var.cluster_name}-${each.key}"
     }
   )
+
+  dynamic "taint" {
+    for_each = try(each.value.taints, [])
+    content {
+      key    = taint.value.key
+      value  = taint.value.value
+      effect = taint.value.effect
+    }
+  }
+
+  dynamic "timeouts" {
+    for_each = length(var.node_group_timeouts) == 0 ? [] : [var.node_group_timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
 
   depends_on = [
     aws_eks_addon.this["vpc-cni"],

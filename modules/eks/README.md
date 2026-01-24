@@ -18,6 +18,7 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_cloudwatch_log_group.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_ec2_tag.cluster_sg_karpenter_discovery](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ec2_tag) | resource |
 | [aws_eks_access_entry.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_entry) | resource |
 | [aws_eks_access_policy_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_policy_association) | resource |
@@ -48,17 +49,25 @@ No modules.
 | <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | EKS Access Entries to grant IAM principals cluster access | <pre>map(object({<br/>    kubernetes_groups = optional(list(string))<br/>    principal_arn     = string<br/>    type              = optional(string, "STANDARD")<br/>    user_name         = optional(string)<br/>    tags              = optional(map(string), {})<br/>    policy_associations = optional(map(object({<br/>      policy_arn = string<br/>      access_scope = object({<br/>        namespaces = optional(list(string))<br/>        type       = string<br/>      })<br/>    })), {})<br/>  }))</pre> | `{}` | no |
 | <a name="input_addons"></a> [addons](#input\_addons) | EKS addons configuration | <pre>map(object({<br/>    addon_version               = optional(string)<br/>    configuration_values        = optional(string)<br/>    preserve                    = optional(bool)<br/>    resolve_conflicts_on_create = optional(string)<br/>    resolve_conflicts_on_update = optional(string)<br/>    pod_identity_association = optional(list(object({<br/>      role_arn        = string<br/>      service_account = string<br/>    })), [])<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
 | <a name="input_allow_empty_access_entries"></a> [allow\_empty\_access\_entries](#input\_allow\_empty\_access\_entries) | Allow empty access\_entries even when cluster creator admin permissions are disabled | `bool` | `false` | no |
+| <a name="input_allow_public_access_from_anywhere"></a> [allow\_public\_access\_from\_anywhere](#input\_allow\_public\_access\_from\_anywhere) | Allow 0.0.0.0/0 in public\_access\_cidrs | `bool` | `false` | no |
+| <a name="input_cluster_enabled_log_types"></a> [cluster\_enabled\_log\_types](#input\_cluster\_enabled\_log\_types) | EKS control plane log types to enable | `list(string)` | <pre>[<br/>  "api",<br/>  "audit",<br/>  "authenticator",<br/>  "controllerManager",<br/>  "scheduler"<br/>]</pre> | no |
+| <a name="input_cluster_encryption_config"></a> [cluster\_encryption\_config](#input\_cluster\_encryption\_config) | KMS encryption config for Kubernetes secrets | <pre>object({<br/>    provider_key_arn = string<br/>    resources        = optional(list(string), ["secrets"])<br/>  })</pre> | `null` | no |
+| <a name="input_cluster_log_kms_key_id"></a> [cluster\_log\_kms\_key\_id](#input\_cluster\_log\_kms\_key\_id) | KMS key id/arn for EKS control plane log group | `string` | `null` | no |
+| <a name="input_cluster_log_retention_in_days"></a> [cluster\_log\_retention\_in\_days](#input\_cluster\_log\_retention\_in\_days) | Retention (days) for EKS control plane log group | `number` | `30` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | EKS cluster name | `string` | n/a | yes |
+| <a name="input_cluster_timeouts"></a> [cluster\_timeouts](#input\_cluster\_timeouts) | Timeouts for EKS cluster operations | <pre>object({<br/>    create = optional(string)<br/>    update = optional(string)<br/>    delete = optional(string)<br/>  })</pre> | `{}` | no |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | EKS cluster version | `string` | `"1.34"` | no |
+| <a name="input_create_cluster_log_group"></a> [create\_cluster\_log\_group](#input\_create\_cluster\_log\_group) | Create CloudWatch log group for EKS control plane logs | `bool` | `true` | no |
 | <a name="input_enable_cluster_creator_admin_permissions"></a> [enable\_cluster\_creator\_admin\_permissions](#input\_enable\_cluster\_creator\_admin\_permissions) | Grant cluster creator admin permissions | `bool` | `false` | no |
 | <a name="input_enable_oidc_provider"></a> [enable\_oidc\_provider](#input\_enable\_oidc\_provider) | Create IAM OIDC provider for IRSA | `bool` | `true` | no |
 | <a name="input_enable_prefix_delegation"></a> [enable\_prefix\_delegation](#input\_enable\_prefix\_delegation) | Enable VPC CNI prefix delegation | `bool` | `true` | no |
 | <a name="input_endpoint_private_access"></a> [endpoint\_private\_access](#input\_endpoint\_private\_access) | Enable private access to the EKS API endpoint | `bool` | `true` | no |
-| <a name="input_endpoint_public_access"></a> [endpoint\_public\_access](#input\_endpoint\_public\_access) | Enable public access to the EKS API endpoint | `bool` | `true` | no |
-| <a name="input_node_group_update_max_unavailable_percentage"></a> [node\_group\_update\_max\_unavailable\_percentage](#input\_node\_group\_update\_max\_unavailable\_percentage) | Max unavailable percentage during managed node group updates | `number` | `100` | no |
-| <a name="input_node_groups"></a> [node\_groups](#input\_node\_groups) | Managed node groups configuration | <pre>map(object({<br/>    ami_type      = string<br/>    ami_id        = string<br/>    instance_type = string<br/>    desired_size  = number<br/>    min_size      = number<br/>    max_size      = number<br/>    disk_size     = number<br/>    max_pods      = number<br/>    labels        = map(string)<br/>  }))</pre> | n/a | yes |
+| <a name="input_endpoint_public_access"></a> [endpoint\_public\_access](#input\_endpoint\_public\_access) | Enable public access to the EKS API endpoint | `bool` | `false` | no |
+| <a name="input_node_group_timeouts"></a> [node\_group\_timeouts](#input\_node\_group\_timeouts) | Timeouts for managed node group operations | <pre>object({<br/>    create = optional(string)<br/>    update = optional(string)<br/>    delete = optional(string)<br/>  })</pre> | `{}` | no |
+| <a name="input_node_group_update_max_unavailable_percentage"></a> [node\_group\_update\_max\_unavailable\_percentage](#input\_node\_group\_update\_max\_unavailable\_percentage) | Max unavailable percentage during managed node group updates | `number` | `33` | no |
+| <a name="input_node_groups"></a> [node\_groups](#input\_node\_groups) | Managed node groups configuration | <pre>map(object({<br/>    ami_type       = string<br/>    ami_id         = string<br/>    instance_type  = string<br/>    instance_types = optional(list(string))<br/>    capacity_type  = optional(string, "ON_DEMAND")<br/>    desired_size   = number<br/>    min_size       = number<br/>    max_size       = number<br/>    disk_size      = number<br/>    max_pods       = number<br/>    labels         = map(string)<br/>    subnet_ids     = optional(list(string))<br/>    taints = optional(list(object({<br/>      key    = string<br/>      value  = string<br/>      effect = string<br/>    })), [])<br/>    tags = optional(map(string), {})<br/>  }))</pre> | n/a | yes |
 | <a name="input_node_role_name"></a> [node\_role\_name](#input\_node\_role\_name) | IAM role name for managed node group | `string` | `null` | no |
-| <a name="input_public_access_cidrs"></a> [public\_access\_cidrs](#input\_public\_access\_cidrs) | CIDR blocks that can access the public EKS API endpoint | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
+| <a name="input_public_access_cidrs"></a> [public\_access\_cidrs](#input\_public\_access\_cidrs) | CIDR blocks that can access the public EKS API endpoint | `list(string)` | `[]` | no |
 | <a name="input_service_ipv4_cidr"></a> [service\_ipv4\_cidr](#input\_service\_ipv4\_cidr) | Kubernetes service IPv4 CIDR | `string` | `"172.20.0.0/16"` | no |
 | <a name="input_ssh_key_name"></a> [ssh\_key\_name](#input\_ssh\_key\_name) | SSH key name for nodes | `string` | `null` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Subnet IDs for the EKS cluster | `list(string)` | n/a | yes |
@@ -71,9 +80,13 @@ No modules.
 |------|-------------|
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | EKS cluster CA data |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | EKS cluster endpoint |
+| <a name="output_cluster_log_group_arn"></a> [cluster\_log\_group\_arn](#output\_cluster\_log\_group\_arn) | Control plane log group ARN (null if disabled) |
+| <a name="output_cluster_log_group_name"></a> [cluster\_log\_group\_name](#output\_cluster\_log\_group\_name) | Control plane log group name (null if disabled) |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | EKS cluster name |
 | <a name="output_cluster_oidc_issuer_url"></a> [cluster\_oidc\_issuer\_url](#output\_cluster\_oidc\_issuer\_url) | OIDC issuer URL |
 | <a name="output_cluster_security_group_id"></a> [cluster\_security\_group\_id](#output\_cluster\_security\_group\_id) | Cluster security group ID |
+| <a name="output_node_group_arns"></a> [node\_group\_arns](#output\_node\_group\_arns) | Managed node group ARNs |
+| <a name="output_node_group_names"></a> [node\_group\_names](#output\_node\_group\_names) | Managed node group names |
 | <a name="output_node_role_arn"></a> [node\_role\_arn](#output\_node\_role\_arn) | Managed node group IAM role ARN |
 | <a name="output_node_security_group_id"></a> [node\_security\_group\_id](#output\_node\_security\_group\_id) | Node security group ID |
 | <a name="output_oidc_provider_arn"></a> [oidc\_provider\_arn](#output\_oidc\_provider\_arn) | OIDC provider ARN (null if disabled) |

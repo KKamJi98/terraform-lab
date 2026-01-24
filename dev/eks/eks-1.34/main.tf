@@ -7,77 +7,24 @@ module "eks" {
   vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
   subnet_ids = data.terraform_remote_state.vpc.outputs.public_subnet_ids
 
-  endpoint_private_access = true
-  endpoint_public_access  = true
-  public_access_cidrs     = ["0.0.0.0/0"]
+  endpoint_private_access           = local.network.endpoint_private_access
+  endpoint_public_access            = local.network.endpoint_public_access
+  public_access_cidrs               = local.network.public_access_cidrs
+  allow_public_access_from_anywhere = local.network.allow_public_access_from_anywhere
 
-  service_ipv4_cidr = "172.20.0.0/16"
+  service_ipv4_cidr = local.network.service_ipv4_cidr
 
   enable_cluster_creator_admin_permissions     = false
   enable_oidc_provider                         = false
   node_group_update_max_unavailable_percentage = 100
 
-  access_entries = {
-    cluster-admin = {
-      principal_arn = data.aws_caller_identity.current.arn
-      policy_associations = {
-        cluster-admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-  }
+  access_entries = local.access_entries
 
-  node_groups = {
-    # arm64-eks-optimized = {
-    #   ami_type      = "AL2023_ARM_64_STANDARD"
-    #   ami_id        = null
-    #   instance_type = "t4g.small"
-    #   desired_size  = 1
-    #   min_size      = 1
-    #   max_size      = 3
-    #   disk_size     = 30
-    #   max_pods      = 110
-    #   labels        = {}
-    # }
-    arm64-bottlerocket = {
-      ami_type      = "BOTTLEROCKET_ARM_64"
-      ami_id        = null
-      instance_type = "t4g.small"
-      desired_size  = 2
-      min_size      = 1
-      max_size      = 3
-      disk_size     = 30
-      max_pods      = 110
-      labels        = {}
-    }
-  }
+  node_groups = local.node_groups
 
   enable_prefix_delegation = true
 
-  addons = {
-    "vpc-cni"    = {}
-    "kube-proxy" = {}
-    "coredns"    = {}
-    "aws-ebs-csi-driver" = {
-      pod_identity_association = [
-        {
-          role_arn        = aws_iam_role.ebs_csi_driver.arn
-          service_account = "ebs-csi-controller-sa"
-        }
-      ]
-    }
-    "eks-pod-identity-agent" = {}
-  }
+  addons = local.addons
 
   tags = local.tags
 }

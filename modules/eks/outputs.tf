@@ -23,6 +23,26 @@ output "oidc_provider_arn" {
   description = "OIDC provider ARN (null if disabled)"
 }
 
+output "node_group_names" {
+  value       = keys(aws_eks_node_group.managed)
+  description = "Managed node group names"
+}
+
+output "node_group_arns" {
+  value       = { for name, ng in aws_eks_node_group.managed : name => ng.arn }
+  description = "Managed node group ARNs"
+}
+
+output "cluster_log_group_name" {
+  value       = try(aws_cloudwatch_log_group.cluster[0].name, null)
+  description = "Control plane log group name (null if disabled)"
+}
+
+output "cluster_log_group_arn" {
+  value       = try(aws_cloudwatch_log_group.cluster[0].arn, null)
+  description = "Control plane log group ARN (null if disabled)"
+}
+
 output "cluster_security_group_id" {
   value       = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
   description = "Cluster security group ID"

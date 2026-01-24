@@ -44,13 +44,77 @@ variable "endpoint_public_access" {
 variable "public_access_cidrs" {
   description = "CIDR blocks that can access the public EKS API endpoint"
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = []
+
+  validation {
+    condition     = !var.endpoint_public_access || length(var.public_access_cidrs) > 0
+    error_message = "public_access_cidrs must not be empty when endpoint_public_access is true."
+  }
+}
+
+variable "allow_public_access_from_anywhere" {
+  description = "Allow 0.0.0.0/0 in public_access_cidrs"
+  type        = bool
+  default     = false
+
+  validation {
+    condition     = !var.endpoint_public_access || var.allow_public_access_from_anywhere || !contains(var.public_access_cidrs, "0.0.0.0/0")
+    error_message = "public_access_cidrs contains 0.0.0.0/0 but allow_public_access_from_anywhere is false."
+  }
 }
 
 variable "enable_cluster_creator_admin_permissions" {
   description = "Grant cluster creator admin permissions"
   type        = bool
   default     = false
+}
+
+variable "cluster_enabled_log_types" {
+  description = "EKS control plane log types to enable"
+  type        = list(string)
+  default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+}
+
+variable "create_cluster_log_group" {
+  description = "Create CloudWatch log group for EKS control plane logs"
+  type        = bool
+  default     = true
+}
+
+variable "cluster_log_retention_in_days" {
+  description = "Retention (days) for EKS control plane log group"
+  type        = number
+  default     = 30
+
+  validation {
+    condition     = var.cluster_log_retention_in_days > 0
+    error_message = "cluster_log_retention_in_days must be greater than 0."
+  }
+}
+
+variable "cluster_log_kms_key_id" {
+  description = "KMS key id/arn for EKS control plane log group"
+  type        = string
+  default     = null
+}
+
+variable "cluster_encryption_config" {
+  description = "KMS encryption config for Kubernetes secrets"
+  type = object({
+    provider_key_arn = string
+    resources        = optional(list(string), ["secrets"])
+  })
+  default = null
+}
+
+variable "cluster_timeouts" {
+  description = "Timeouts for EKS cluster operations"
+  type = object({
+    create = optional(string)
+    update = optional(string)
+    delete = optional(string)
+  })
+  default = {}
 }
 
 variable "enable_oidc_provider" {
@@ -72,15 +136,24 @@ variable "node_role_name" {
 variable "node_groups" {
   description = "Managed node groups configuration"
   type = map(object({
-    ami_type      = string
-    ami_id        = string
-    instance_type = string
-    desired_size  = number
-    min_size      = number
-    max_size      = number
-    disk_size     = number
-    max_pods      = number
-    labels        = map(string)
+    ami_type       = string
+    ami_id         = string
+    instance_type  = string
+    instance_types = optional(list(string))
+    capacity_type  = optional(string, "ON_DEMAND")
+    desired_size   = number
+    min_size       = number
+    max_size       = number
+    disk_size      = number
+    max_pods       = number
+    labels         = map(string)
+    subnet_ids     = optional(list(string))
+    taints = optional(list(object({
+      key    = string
+      value  = string
+      effect = string
+    })), [])
+    tags = optional(map(string), {})
   }))
 
   validation {
@@ -101,12 +174,22 @@ variable "ssh_key_name" {
 variable "node_group_update_max_unavailable_percentage" {
   description = "Max unavailable percentage during managed node group updates"
   type        = number
-  default     = 100
+  default     = 33
 
   validation {
     condition     = var.node_group_update_max_unavailable_percentage >= 0 && var.node_group_update_max_unavailable_percentage <= 100
     error_message = "node_group_update_max_unavailable_percentage must be between 0 and 100."
   }
+}
+
+variable "node_group_timeouts" {
+  description = "Timeouts for managed node group operations"
+  type = object({
+    create = optional(string)
+    update = optional(string)
+    delete = optional(string)
+  })
+  default = {}
 }
 
 #######################################################################
