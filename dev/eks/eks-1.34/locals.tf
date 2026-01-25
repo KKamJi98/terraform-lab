@@ -45,9 +45,10 @@ locals {
   }
 
   addons = {
-    "vpc-cni"    = {}
-    "kube-proxy" = {}
-    "coredns"    = {}
+    "vpc-cni"                = {}
+    "kube-proxy"             = {}
+    "coredns"                = {}
+    "eks-pod-identity-agent" = {}
     "aws-ebs-csi-driver" = {
       pod_identity_association = [
         {
@@ -55,8 +56,8 @@ locals {
           service_account = "ebs-csi-controller-sa"
         }
       ]
+      after_core = true
     }
-    "eks-pod-identity-agent" = {}
   }
 
   tags = {

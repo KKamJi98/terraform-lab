@@ -239,6 +239,7 @@ variable "addons" {
     preserve                    = optional(bool)
     resolve_conflicts_on_create = optional(string)
     resolve_conflicts_on_update = optional(string)
+    after_core                  = optional(bool, false)
     pod_identity_association = optional(list(object({
       role_arn        = string
       service_account = string

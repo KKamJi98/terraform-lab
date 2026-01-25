@@ -3,14 +3,17 @@
 #######################################################################
 
 resource "aws_launch_template" "node_group" {
-  for_each = local.custom_ami_node_groups
+  for_each = merge(
+    local.custom_ami_node_groups,
+    local.bottlerocket_node_groups
+  )
 
   name_prefix   = "${var.cluster_name}-${each.key}-ng-"
-  image_id      = each.value.ami_id
+  image_id      = each.value.ami_type == "CUSTOM" ? each.value.ami_id : null
   instance_type = each.value.instance_type
   key_name      = var.ssh_key_name
 
-  user_data = local.node_group_user_data[each.key]
+  user_data = each.value.ami_type == "CUSTOM" ? local.node_group_user_data[each.key] : local.bottlerocket_user_data[each.key]
 
   block_device_mappings {
     device_name = "/dev/xvda"

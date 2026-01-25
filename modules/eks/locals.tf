@@ -13,6 +13,11 @@ locals {
     if ng.ami_type == "CUSTOM"
   }
 
+  bottlerocket_node_groups = {
+    for name, ng in var.node_groups : name => ng
+    if ng.ami_type == "BOTTLEROCKET_ARM_64" || ng.ami_type == "BOTTLEROCKET_X86_64"
+  }
+
   node_group_user_data = {
     for name, ng in local.custom_ami_node_groups :
     name => base64encode(templatefile(
@@ -22,6 +27,20 @@ locals {
         cluster_endpoint = aws_eks_cluster.this.endpoint
         cluster_ca       = aws_eks_cluster.this.certificate_authority[0].data
         cluster_cidr     = local.cluster_cidr
+        cluster_dns      = local.cluster_dns
+        max_pods         = ng.max_pods
+      }
+    ))
+  }
+
+  bottlerocket_user_data = {
+    for name, ng in local.bottlerocket_node_groups :
+    name => base64encode(templatefile(
+      "${path.module}/templates/bottlerocket.tpl",
+      {
+        cluster_name     = aws_eks_cluster.this.name
+        cluster_endpoint = aws_eks_cluster.this.endpoint
+        cluster_ca       = aws_eks_cluster.this.certificate_authority[0].data
         cluster_dns      = local.cluster_dns
         max_pods         = ng.max_pods
       }

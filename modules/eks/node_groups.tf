@@ -17,10 +17,10 @@ resource "aws_eks_node_group" "managed" {
   )
 
   labels    = each.value.labels
-  disk_size = each.value.ami_type == "CUSTOM" ? null : each.value.disk_size
+  disk_size = (each.value.ami_type == "CUSTOM" || each.value.ami_type == "BOTTLEROCKET_ARM_64" || each.value.ami_type == "BOTTLEROCKET_X86_64") ? null : each.value.disk_size
 
   dynamic "launch_template" {
-    for_each = each.value.ami_type == "CUSTOM" ? [1] : []
+    for_each = (each.value.ami_type == "CUSTOM" || each.value.ami_type == "BOTTLEROCKET_ARM_64" || each.value.ami_type == "BOTTLEROCKET_X86_64") ? [1] : []
     content {
       id      = aws_launch_template.node_group[each.key].id
       version = "$Latest"
