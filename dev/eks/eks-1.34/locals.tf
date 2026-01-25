@@ -30,7 +30,7 @@ locals {
   }
 
   node_groups = {
-    arm64-bottlerocket = {
+    arm64-bottlerocket-small = {
       ami_type      = "BOTTLEROCKET_ARM_64"
       ami_id        = null
       instance_type = "t4g.small"
@@ -39,7 +39,19 @@ locals {
       max_size      = 3
       disk_size     = 30
       max_pods      = 110
-      labels        = {}
+      labels        = { role = "small" }
+      subnet_ids    = data.terraform_remote_state.vpc.outputs.public_subnet_ids
+    }
+    arm64-bottlerocket-medium = {
+      ami_type      = "BOTTLEROCKET_ARM_64"
+      ami_id        = null
+      instance_type = "t4g.medium"
+      desired_size  = 1
+      min_size      = 1
+      max_size      = 3
+      disk_size     = 30
+      max_pods      = 110
+      labels        = { role = "medium" }
       subnet_ids    = data.terraform_remote_state.vpc.outputs.public_subnet_ids
     }
   }
@@ -50,6 +62,14 @@ locals {
     "coredns"                = {}
     "eks-pod-identity-agent" = {}
     "aws-ebs-csi-driver" = {
+      configuration_values = jsonencode({
+        controller = {
+          resources = null
+        }
+        node = {
+          resources = null
+        }
+      })
       pod_identity_association = [
         {
           role_arn        = aws_iam_role.ebs_csi_driver.arn
