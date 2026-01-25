@@ -12,7 +12,7 @@ resource "aws_eks_node_group" "managed" {
 
   ami_type      = each.value.ami_type
   capacity_type = try(each.value.capacity_type, null)
-  instance_types = each.value.ami_type == "CUSTOM" ? null : (
+  instance_types = (each.value.ami_type == "CUSTOM" || each.value.ami_type == "BOTTLEROCKET_ARM_64" || each.value.ami_type == "BOTTLEROCKET_X86_64") ? null : (
     length(coalesce(each.value.instance_types, [])) > 0 ? each.value.instance_types : [each.value.instance_type]
   )
 
@@ -23,7 +23,7 @@ resource "aws_eks_node_group" "managed" {
     for_each = (each.value.ami_type == "CUSTOM" || each.value.ami_type == "BOTTLEROCKET_ARM_64" || each.value.ami_type == "BOTTLEROCKET_X86_64") ? [1] : []
     content {
       id      = aws_launch_template.node_group[each.key].id
-      version = "$Latest"
+      version = aws_launch_template.node_group[each.key].latest_version
     }
   }
 
