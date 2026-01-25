@@ -8,7 +8,7 @@ resource "aws_eks_node_group" "managed" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = each.key
   node_role_arn   = aws_iam_role.node_group.arn
-  subnet_ids      = try(each.value.subnet_ids, var.subnet_ids)
+  subnet_ids      = coalesce(each.value.subnet_ids, var.subnet_ids)
 
   ami_type      = each.value.ami_type
   capacity_type = try(each.value.capacity_type, null)

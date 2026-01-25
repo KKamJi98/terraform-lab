@@ -40,6 +40,7 @@ locals {
       disk_size     = 30
       max_pods      = 110
       labels        = {}
+      subnet_ids    = data.terraform_remote_state.vpc.outputs.public_subnet_ids
     }
   }
 
